@@ -7,7 +7,7 @@ def slackChannel = "contentmentfoundation"
 
 def sendMessageToSlack(String color, String message) {
     def notifyChannel = 'ava'
-    slackSend message: message
+    slackSend(color: color message: message, channel: notifyChannel)
 }
 
 pipeline {
