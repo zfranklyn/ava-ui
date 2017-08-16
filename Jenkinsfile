@@ -1,9 +1,17 @@
+def projectName = "ava-ui"
+def s3BucketURL = "ava-contentment.s3.amazonaws.com"
+def jenkinsURL = "http://ec2-34-228-73-99.compute-1.amazonaws.com"
+def prNumber = env.BRANCH_NAME
+def githubURL = "https://github.com/zfranklyn/$projectName/pulls/$prNumber"
+
+
 pipeline {
   agent any
   stages {
     stage('Initial Stage'){
       steps {
-        sh 'ls -la' 
+        sh 'echo "PR Number: $prNumber"'
+        sh 'echo "github URL: $githubURL"'
       }
     }
     stage('Build') {
