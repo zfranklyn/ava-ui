@@ -17,7 +17,7 @@ pipeline {
       steps {
         sh "echo \"PR Number: ${prNumber}\""
         sh "echo \"github URL: ${githubURL}\""
-        slackSend('good', "Build for Branch #${prNumber} intiated");
+        sendMessageToSlack('good', "Build for Branch #${prNumber} intiated");
       }
     }
     stage('Build') {
