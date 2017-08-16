@@ -6,7 +6,7 @@ def githubURL = "https://github.com/zfranklyn/$projectName/pulls/$prNumber"
 def slackChannel = "contentmentfoundation"
 
 def sendMessageToSlack(String color, String message) {
-    def notifyChannel = '#ava'
+    def notifyChannel = 'ava'
     slackSend color: color, message: message, channel: notifyChannel 
 }
 
