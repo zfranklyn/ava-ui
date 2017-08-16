@@ -10,8 +10,8 @@ pipeline {
   stages {
     stage('Initial Stage'){
       steps {
-        sh 'echo "PR Number: $prNumber"'
-        sh 'echo "github URL: $githubURL"'
+        sh "echo \"PR Number: ${prNumber}\""
+        sh "echo \"github URL: ${githubURL}\""
       }
     }
     stage('Build') {
