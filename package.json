@@ -4,12 +4,9 @@
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^1.24.0",
-    "@types/es6-shim": "^0.31.34",
     "@types/jest": "^20.0.4",
-    "@types/moment": "^2.13.0",
     "@types/node": "^8.0.14",
     "@types/pure-render-decorator": "^0.2.27",
-    "@types/react": "^15.6.1",
     "@types/react-addons-css-transition-group": "^15.0.3",
     "@types/react-dom": "^15.5.1",
     "@types/react-redux": "^4.4.47",
