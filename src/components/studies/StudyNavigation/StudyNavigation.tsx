@@ -15,7 +15,9 @@ class StudyNavigation extends React.Component<StudyNavigationProps, StudyNavigat
   render() {
     return (
       <div className="study-navigation">
-        <h2>{this.props.title}</h2>
+        <div className="title-bar">
+          <h4>{this.props.title}</h4>
+        </div>
         <div className="controls">
           <div className="pt-form-group">
             <div className="pt-input-group">
