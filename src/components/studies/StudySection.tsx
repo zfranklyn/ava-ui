@@ -3,6 +3,7 @@ import './StudySection.css';
 
 import StudyNavigation from './StudyNavigation/StudyNavigation';
 import StudyList from './StudyList/StudyList';
+// import StudyModal from './StudyModal/StudyModal';
 
 class StudySection extends React.Component<{}, {}> {
   render() {
@@ -10,6 +11,7 @@ class StudySection extends React.Component<{}, {}> {
       <div className="study-section">
         <StudyNavigation title={'Studies'}/>
         <StudyList />
+        {/* <StudyModal/> */}
       </div>
     );
   }

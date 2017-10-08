@@ -1,11 +1,18 @@
 import * as React from 'react';
 import './StudyList.css';
 
+import StudyCard from './StudyCard';
+
 class StudyList extends React.Component<{}, {}> {
   render() {
     return (
       <div className="study-list">
-          study list
+        <StudyCard />
+        <StudyCard />
+        <StudyCard />
+        <StudyCard />
+        <StudyCard />
+        <StudyCard />
       </div>
     );
   }
