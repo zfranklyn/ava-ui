@@ -1,0 +1,6 @@
+.ava-container {
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0,0,0,0.05);
+    padding-left: 48px;
+}

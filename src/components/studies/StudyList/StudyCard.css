@@ -1,0 +1,13 @@
+.study-card {
+  width: 400px;
+  height: 300px;
+  margin: 15px;
+  position: relative;
+}
+
+.study-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: green;
+}

@@ -1,5 +1,37 @@
-.ava-container {
-  height: 100%;
+.sidebar {
+  width: 48px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: white;
+  box-shadow: 5px 0px 20px rgba(0,0,0,0.05);
+  z-index: 10;
+}
+
+.sidebar-logo {
+  height: 48px;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
+  background: url('./logo.svg') no-repeat 50%;
+  background-size: 60%;
+}
+
+.sidebar-button {
+  display: block;
+  opacity: 0.5;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
+  padding: 10px 0px;
+}
+
+.sidebar-button:hover {
+  opacity: 1.0;
+  background-color: rgba(72, 175, 240, 0.15);
+}
+
+.active {
+  opacity: 1.0;
+  color: white !important;
+  background-color: rgba(72, 175, 240, 1.0) !important; 
 }
