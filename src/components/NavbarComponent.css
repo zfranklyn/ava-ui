@@ -12,7 +12,8 @@
 .sidebar-logo {
   height: 48px;
   width: 100%;
-  text-align: center;
+  background: url('./logo.svg') no-repeat 50%;
+  background-size: 60%;
 }
 
 .sidebar-button {

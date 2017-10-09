@@ -6,9 +6,7 @@ class NavbarComponent extends React.Component<{}, {}> {
   render() {
     return (
       <nav className="sidebar">
-        <div className="sidebar-logo">
-          AVA
-        </div>
+        <div className="sidebar-logo"/>
         <div className="sidebar-group">
           <div className="sidebar-button active">
             <Tooltip content="Studies" position={Position.RIGHT}>
