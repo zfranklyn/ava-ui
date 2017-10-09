@@ -3,15 +3,15 @@ import './StudyNavigation.css';
 
 import { Switch } from '@blueprintjs/core';
 
-interface StudyNavigationProps {
+interface IStudyNavigationProps {
     title: string;
 }
 
-interface StudyNavigationState {
+interface IStudyNavigationState {
 
 }
 
-class StudyNavigation extends React.Component<StudyNavigationProps, StudyNavigationState> {
+class StudyNavigation extends React.Component<IStudyNavigationProps, IStudyNavigationState> {
   render() {
     return (
       <div className="study-navigation">
