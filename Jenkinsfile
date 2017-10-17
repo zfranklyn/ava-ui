@@ -42,7 +42,6 @@ pipeline {
   stages {
     stage('Initial Stage'){
       steps {
-        sh "echo \${USER}"
         sh "echo \"PR Number: ${prNumber}\""
         sh "echo \"github URL: ${githubURL}\""
         sendMessageToSlack('good', "AVA-UI: Build for Branch #${prNumber} intiated");

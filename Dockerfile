@@ -10,4 +10,6 @@ RUN echo "Dockerfile is Executing"
 
 COPY . /app
 
+RUN yarn add -g create-react-app
+
 RUN yarn build
