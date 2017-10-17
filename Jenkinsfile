@@ -27,7 +27,7 @@ def s3Upload(Boolean gzip, String bucket, String sourceFile){
                                 selectedRegion: 'us-east-2', 
                                 showDirectlyInBrowser: false, 
                                 sourceFile: sourceFile, 
-                                storageClass: 'REDUCED_REDUNDANCY', 
+                              storageClass: 'REDUCED_REDUNDANCY', 
                                 uploadFromSlave: false, 
                                 useServerSideEncryption: false
                                 ]
