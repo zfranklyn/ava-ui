@@ -63,6 +63,7 @@ pipeline {
     }
   } catch (err) {
     sendMessageToSlack('bad', "AVA-UI: Branch #${prNumber} broken");
+    throw err
   }
 }
 
