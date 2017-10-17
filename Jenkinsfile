@@ -39,15 +39,16 @@ def s3Upload(Boolean gzip, String bucket, String sourceFile){
 
 pipeline {
   agent any
-  try {
-    stages {
-      stage('Initial Stage'){
-        steps {
-          sh "echo \"PR Number: ${prNumber}\""
-          sh "echo \"github URL: ${githubURL}\""
-          sendMessageToSlack('good', "AVA-UI: Build for Branch #${prNumber} intiated");
-        }
+  stages {
+    stage('Initial Stage'){
+      steps {
+        sh "echo \"PR Number: ${prNumber}\""
+        sh "echo \"github URL: ${githubURL}\""
+        sendMessageToSlack('good', "AVA-UI: Build for Branch #${prNumber} intiated");
       }
+    }
+    try {
+
       stage('Build') {
         steps { 
           sh "docker build -t ui_image ."
@@ -60,11 +61,13 @@ pipeline {
           sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
         }
       }
+
+    } catch (err) {
+      sendMessageToSlack('bad', "AVA-UI: Branch #${prNumber} broken");
+      throw err
     }
-  } catch (err) {
-    sendMessageToSlack('bad', "AVA-UI: Branch #${prNumber} broken");
-    throw err
   }
+
 }
 
 // //change these variables for your project
