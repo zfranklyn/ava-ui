@@ -1,6 +1,6 @@
 #! /bin/bash
 
 echo "Syncing with S3"
-aws s3 sync ./s3/build s3://www.santusha.com
+aws s3 sync ./s3/build s3://dev.santusha.com
 echo "Synced with S3"
 
