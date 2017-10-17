@@ -1,0 +1,8 @@
+docker build -t image_name .
+docker run -it image_name /bin/bash
+docker run image_name command
+docker cp <container_id>:/<sourcePath> <destPath>
+
+docker build -t UI_IMAGE .
+CONTAINER_ID="$(docker run -t -d UI_IMAGE)"
+docker cp "${CONTAINER_ID}:/app/build" ./s3

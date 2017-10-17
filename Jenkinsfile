@@ -49,8 +49,13 @@ pipeline {
     }
     stage('Build') {
       steps { 
-        sh 'yarn build' 
-				sh './sync'
+        sh "docker build -t ui_image ."
+        sh 'CONTAINER_ID="$(docker run -t -d ui_image)"'
+        sh "docker cp ${CONTAINER_ID}:/app/build ./s3"
+        sh "./sync"
+        sh "docker stop $(docker ps -a -q)"
+        sh "docker rmi $(docker images -q)"
+        sh "rm -r ./s3/build"
         sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
       }
     }
