@@ -49,14 +49,15 @@ pipeline {
     }
     stage('Build') {
       steps { 
-        sh "rm -rf ./s3/build"
+        sh "rm -rf ./s3"
+        sh "mkdir s3"
         sh "docker build -t ui_image ."
         sh "echo 'IMAGE HAS BEEN BUILT'"
         sh "CONTAINER_ID=\"\$(docker run -t -d ui_image)\" ; docker cp \"\${CONTAINER_ID}:/app/build\" ./s3"
-        sh "./sync"
+        sh "aws s3 sync ./s3/build s3://dev.santusha.com"
         sh "docker stop \$(docker ps -a -q)"
         sh "docker rmi \$(docker images -q)"
-        sh "rm -rf ./s3/build"
+        sh "rm -rf ./s3"
         sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
       }
     }
