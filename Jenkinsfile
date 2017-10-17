@@ -49,7 +49,9 @@ pipeline {
     }
     stage('Build') {
       steps { 
+        sh "rm -rf ./s3/build"        
         sh "docker build -t ui_image ."
+        sh "echo 'IMAGE HAS BEEN BUILT'"
         sh 'CONTAINER_ID="$(docker run -t -d ui_image)"'
         sh "docker cp \${CONTAINER_ID}:/app/build ./s3"
         sh "./sync"
