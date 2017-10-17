@@ -47,9 +47,12 @@ pipeline {
         sendMessageToSlack('good', "AVA-UI: Build for Branch #${prNumber} intiated");
       }
     }
-    stage('Build') {
+    stage('Build and Upload to S3') {
       steps { 
         sh "rm -rf ./s3"
+        sh "docker stop \$(docker ps -a -q)"
+        sh "docker rm \$(docker ps -a -q)"
+        sh "docker rmi \$(docker images -q)"
         sh "mkdir s3 ; ls ; pwd"
         sh "pwd"
         sh "ls"
@@ -58,6 +61,7 @@ pipeline {
         sh "CONTAINER_ID=\"\$(docker run -t -d ui_image)\" ; docker cp \"\${CONTAINER_ID}:/app/build\" ./s3"
         sh "aws s3 sync ./s3/build s3://dev.santusha.com"
         sh "docker stop \$(docker ps -a -q)"
+        sh "docker rm \$(docker ps -a -q)"
         sh "docker rmi \$(docker images -q)"
         sh "rm -rf ./s3"
         sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
