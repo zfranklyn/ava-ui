@@ -50,9 +50,9 @@ pipeline {
     stage('Build and Upload to S3') {
       steps { 
         sh "rm -rf ./s3"
-        sh "docker stop \$(docker ps -a -q)"
-        sh "docker rm \$(docker ps -a -q)"
-        sh "docker rmi \$(docker images -q)"
+        sh "\$(docker stop \$(docker ps -a -q)) 2> /dev/null"
+        sh "\$(docker rm \$(docker ps -a -q)) 2> /dev/null"
+        sh "\$(docker rmi \$(docker images -q)) 2> /dev/null"
         sh "mkdir s3 ; ls ; pwd"
         sh "pwd"
         sh "ls"
