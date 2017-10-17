@@ -61,7 +61,7 @@ pipeline {
         sh "docker rm \$(docker ps -a -q)"
         sh "docker rmi \$(docker images -q)"
         sh "rm -rf ./s3"
-        sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
+        sendMessageToSlack('good', "AVA-UI: Build for branch #${prNumber} suceeded! Preview available <http://dev.santusha.com/|here>");
       }
     }
   }
