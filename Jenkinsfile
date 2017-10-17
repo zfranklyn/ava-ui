@@ -57,8 +57,8 @@ pipeline {
         sh "echo 'IMAGE HAS BEEN BUILT'"
         sh "CONTAINER_ID=\"\$(docker run -t -d ui_image)\" ; docker cp \"\${CONTAINER_ID}:/app/build\" ./s3"
         sh "aws s3 sync ./s3/build s3://dev.santusha.com"
-        sh "docker stop \$(docker ps -a -q)"
-        sh "docker rmi \$(docker images -q)"
+        sh "docker stop \$(docker ps -a -q) --force"
+        sh "docker rmi \$(docker images -q) --force"
         sh "rm -rf ./s3"
         sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
       }
