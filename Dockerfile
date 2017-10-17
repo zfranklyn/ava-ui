@@ -12,5 +12,6 @@ COPY . /app
 
 RUN npm install -g create-react-app
 RUN npm install -g react-scripts-ts
+RUN yarn
 
 RUN yarn build
