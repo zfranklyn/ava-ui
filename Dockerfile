@@ -11,5 +11,6 @@ RUN echo "Dockerfile is Executing"
 COPY . /app
 
 RUN npm install -g create-react-app
+RUN npm install -g react-scripts-ts
 
 RUN yarn build
