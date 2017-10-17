@@ -50,7 +50,7 @@ pipeline {
     stage('Build') {
       steps { 
         sh "rm -rf ./s3"
-        sh "mkdir s3"
+        sh "mkdir s3 ; ls ; pwd"
         sh "docker build -t ui_image ."
         sh "echo 'IMAGE HAS BEEN BUILT'"
         sh "CONTAINER_ID=\"\$(docker run -t -d ui_image)\" ; docker cp \"\${CONTAINER_ID}:/app/build\" ./s3"
