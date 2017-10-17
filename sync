@@ -1,0 +1,6 @@
+#! /bin/bash
+
+echo "Syncing with S3"
+aws s3 sync ./build s3://www.santusha.com --include "./build"
+echo "Synced with S3"
+

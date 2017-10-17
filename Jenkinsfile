@@ -10,6 +10,33 @@ def sendMessageToSlack(String color, String message) {
     slackSend(color: color, message: message, channel: notifyChannel)
 }
 
+def s3Upload(Boolean gzip, String bucket, String sourceFile){
+    step([
+                        $class: 'S3BucketPublisher', 
+                        consoleLogLevel: 'INFO', 
+                        dontWaitForConcurrentBuildCompletion: true, 
+                        entries: [
+                            [
+                                bucket: bucket,
+                                excludedFile: '', 
+                                flatten: false, 
+                                gzipFiles: gzip,
+                                keepForever: false, 
+                                managedArtifacts: false, 
+                                noUploadOnFailure: true, 
+                                selectedRegion: 'us-east-2', 
+                                showDirectlyInBrowser: false, 
+                                sourceFile: sourceFile, 
+                                storageClass: 'REDUCED_REDUNDANCY', 
+                                uploadFromSlave: false, 
+                                useServerSideEncryption: false
+                                ]
+                            ], 
+                            pluginFailureResultConstraint: 'FAILURE', 
+                            profileName: 'AccentureJumpStart', 
+                            userMetadata: []])
+}
+
 pipeline {
   agent any
   stages {
@@ -22,7 +49,9 @@ pipeline {
     }
     stage('Build') {
       steps { 
-        sh 'ls' 
+        sh 'yarn build' 
+				sh './sync'
+        sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
       }
     }
   }
