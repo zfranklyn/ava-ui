@@ -47,24 +47,17 @@ pipeline {
         sendMessageToSlack('good', "AVA-UI: Build for Branch #${prNumber} intiated");
       }
     }
-    try {
-
-      stage('Build') {
-        steps { 
-          sh "docker build -t ui_image ."
-          sh 'CONTAINER_ID="$(docker run -t -d ui_image)"'
-          sh "docker cp ${CONTAINER_ID}:/app/build ./s3"
-          sh "./sync"
-          sh "docker stop \$(docker ps -a -q)"
-          sh "docker rmi \$(docker images -q)"
-          sh "rm -r ./s3/build"
-          sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
-        }
+    stage('Build') {
+      steps { 
+        sh "docker build -t ui_image ."
+        sh 'CONTAINER_ID="$(docker run -t -d ui_image)"'
+        sh "docker cp ${CONTAINER_ID}:/app/build ./s3"
+        sh "./sync"
+        sh "docker stop \$(docker ps -a -q)"
+        sh "docker rmi \$(docker images -q)"
+        sh "rm -r ./s3/build"
+        sendMessageToSlack('good', "AVA-UI: Branch #${prNumber} can be previewed <http://www.santusha.com/|here>");
       }
-
-    } catch (err) {
-      sendMessageToSlack('bad', "AVA-UI: Branch #${prNumber} broken");
-      throw err
     }
   }
 
