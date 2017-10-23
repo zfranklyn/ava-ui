@@ -3,16 +3,19 @@ import './StudyList.css';
 
 import StudyCard from './StudyCard';
 
-class StudyList extends React.Component<{}, {}> {
+export interface IStudyListProps {
+  studies: any[];
+}
+
+class StudyList extends React.Component<IStudyListProps, {}> {
   render() {
     return (
       <div className="study-list">
-        <StudyCard />
-        <StudyCard />
-        <StudyCard />
-        <StudyCard />
-        <StudyCard />
-        <StudyCard />
+
+        {this.props.studies.map((studyData: any, index: number) => {
+          return <StudyCard studyData={studyData} key={index}/>;
+        })}
+
       </div>
     );
   }

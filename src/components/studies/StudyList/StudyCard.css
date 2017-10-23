@@ -9,5 +9,12 @@
   position: absolute;
   top: 8px;
   right: 8px;
+}
+
+.active {
   color: green;
+}
+
+.inactive {
+  color: gray;
 }

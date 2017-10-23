@@ -5,6 +5,8 @@ import StudyNavigation from './StudyNavigation/StudyNavigation';
 import StudyList from './StudyList/StudyList';
 // import StudyModal from './StudyModal/StudyModal';
 
+import { IAPIStudy } from './../../models/study.model';
+
 export interface IStudySectionProps {
   title: string;
 }
@@ -36,11 +38,20 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     };
   }
 
+  public componentDidMount() {
+    fetch('http://localhost:8080/studies')
+      .then(res => res.json())
+      .then((studies: IAPIStudy[]) => {
+        this.setState({
+          studies
+        });
+      });
+  }
+
   public modifySearchConditions = async (newConditions: ISearchConditions) => {
     await this.setState({
       searchConditions: newConditions,
     });
-    console.log(this.state.searchConditions);
   }
 
   public render() {
@@ -51,7 +62,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
           modifySearchConditions={this.modifySearchConditions}
           searchConditions={this.state.searchConditions}
         />
-        <StudyList />
+        <StudyList studies={this.state.studies}/>
         {/* <StudyModal/> */}
       </div>
     );
