@@ -8,6 +8,7 @@
   background-color: white;
   box-shadow: -5px 0px 20px rgba(0,0,0,0.05);
   transition: 0.5s ease-in-out;
+  opacity: 0.9;
 }
 
 .hidden {

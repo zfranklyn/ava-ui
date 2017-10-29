@@ -1,81 +1,56 @@
 import * as React from 'react';
 import './ParticipantTable.css';
+import { IUser } from './../../../models/user.model';
 
 import { Tag } from '@blueprintjs/core';
 
-class ParticipantTable extends React.Component<{}, {}> {
+interface IParticipantTableProps {
+  participants: any[];
+}
+
+class ParticipantTable extends React.Component<IParticipantTableProps, {}> {
+
+  private renderHeaders = () => {
+    return (
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Participant Name</th>
+          <th>Email</th>
+          <th>Telephone</th>
+          <th>User Role</th>
+        </tr>
+      </thead>      
+    );
+  }
+
+  private renderRows = () => {
+
+    const participants = this.props.participants;
+
+    return (
+      <tbody>
+        {participants.map((participant: IUser, index) => {
+          return (
+            <tr key={index}>
+              <td>{participant.id}</td>
+              <td>{participant.firstName} {participant.lastName}</td>
+              <td>{participant.email}</td>
+              <td>{participant.tel}</td>
+              <td><Tag>{participant.userRole}</Tag></td>
+            </tr>
+          );
+        })}
+      </tbody>
+    );
+  }
 
   public render() {
     return (
       <div className="participant-table-container">
         <table className="participant-table pt-table pt-bordered pt-striped pt-interactive">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Participant Name</th>
-              <th>Email</th>
-              <th>Telephone</th>
-              <th>Tags</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-            <tr>
-              <td>12345</td>
-              <td>Franklyn Zhu</td>
-              <td>franklyn.zhu@yale.edu</td>
-              <td>6509467649</td>
-              <td><Tag>Bhutan</Tag></td>
-            </tr>
-          </tbody>
+          {this.renderHeaders()}
+          {this.renderRows()}
         </table>
       </div>
     );
