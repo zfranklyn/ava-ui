@@ -3,13 +3,20 @@ import './StudyModal.css';
 
 import { Dialog } from '@blueprintjs/core';
 
-class StudyModal extends React.Component<{}, {}> {
+interface IStudyModalProps {
+  isOpen: boolean;
+  currentStudyId: string;
+  closeStudy: Function;
+}
+
+class StudyModal extends React.Component<IStudyModalProps, {}> {
   render() {
     return (
       <Dialog 
         className="study-modal"
         title="Study Name"
-        isOpen={true}
+        isOpen={this.props.isOpen}
+        onClose={() => this.props.closeStudy()}
       >
         <div className="pt-dialog-body">
           Body

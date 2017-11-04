@@ -3,7 +3,7 @@ import './StudySection.css';
 
 import StudyNavigation from './StudyNavigation/StudyNavigation';
 import StudyList from './StudyList/StudyList';
-// import StudyModal from './StudyModal/StudyModal';
+import StudyModal from './StudyModal/StudyModal';
 
 import { IAPIStudy } from './../../models/study.model';
 
@@ -54,6 +54,20 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     });
   }
 
+  public openStudy = (id: string) => {
+    this.setState({
+      currentStudyId: id,
+      modalOpen: true,
+    });
+  }
+
+  public closeStudy = () => {
+    this.setState({
+      currentStudyId: '',
+      modalOpen: false,
+    });
+  }
+
   public render() {
     return (
       <div className="study-section">
@@ -62,8 +76,12 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
           modifySearchConditions={this.modifySearchConditions}
           searchConditions={this.state.searchConditions}
         />
-        <StudyList studies={this.state.studies}/>
-        {/* <StudyModal/> */}
+        <StudyList studies={this.state.studies} openStudy={this.openStudy} closeStudy={this.closeStudy}/>
+        <StudyModal 
+          isOpen={this.state.modalOpen} 
+          currentStudyId={this.state.currentStudyId} 
+          closeStudy={this.closeStudy}
+        />
       </div>
     );
   }
