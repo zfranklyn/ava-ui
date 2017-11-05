@@ -72,7 +72,7 @@ class ParticipantSection extends React.Component<IParticipantSectionProps, IPart
       <ParticipantTable 
         participants={this.state.participants}
       />
-    )
+    );
   }
 
   render() {

@@ -18,7 +18,7 @@ export interface ISearchConditions {
 
 export interface IStudySectionState {
   searchConditions: ISearchConditions;
-  studies: Object[];
+  studies: IAPIStudy[];
   currentStudyId: string;
   modalOpen: boolean;
 }
@@ -32,8 +32,8 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
         searchTerm: '', 
         active: false
       },
-      studies: [],
       currentStudyId: '',
+      studies: [],
       modalOpen: false,
     };
   }
@@ -63,7 +63,6 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
 
   public closeStudy = () => {
     this.setState({
-      currentStudyId: '',
       modalOpen: false,
     });
   }
@@ -77,11 +76,15 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
           searchConditions={this.state.searchConditions}
         />
         <StudyList studies={this.state.studies} openStudy={this.openStudy} closeStudy={this.closeStudy}/>
-        <StudyModal 
-          isOpen={this.state.modalOpen} 
-          currentStudyId={this.state.currentStudyId} 
-          closeStudy={this.closeStudy}
-        />
+        {(this.state.modalOpen) ? 
+          <StudyModal 
+            isOpen={this.state.modalOpen} 
+            currentStudyId={this.state.currentStudyId} 
+            closeStudy={this.closeStudy}
+          />
+          : null
+        }
+
       </div>
     );
   }
