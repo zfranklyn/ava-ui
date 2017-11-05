@@ -18,6 +18,7 @@ class StudyList extends React.Component<IStudyListProps, {}> {
         {this.props.studies.map((studyData: IAPIStudy, index: number) => {
           return (
             <div 
+              className="study-card pt-card pt-elevation-2 pt-interactive"
               key={index}
               onClick={() => this.props.openStudy(studyData.id)}
             >
@@ -34,7 +35,7 @@ class StudyList extends React.Component<IStudyListProps, {}> {
 const renderStudyCard = (studyData: IAPIStudy) => {
 
   return (
-    <div className="study-card pt-card pt-elevation-2 pt-interactive">
+    <div>
       <Icon className="study-status active" iconName="pt-icon-record" /> 
       <h5 className="pt-text-overflow-ellipsis">{studyData.title}</h5>
       <p className="pt-ui-text pt-text-muted pt-text-overflow-ellipsis">

@@ -3,9 +3,10 @@ import './TabParticipants.css';
 
 // import { Dialog, Spinner, Tab2, Tabs2 } from '@blueprintjs/core';
 
-// import { IAPIStudy } from './../../../models/study.model';
+import { IAPIStudy } from './../../../models/study.model';
 
 interface ITabParticipantsProps {
+  studyData: IAPIStudy;
 }
 
 interface ITabParticipantsState {

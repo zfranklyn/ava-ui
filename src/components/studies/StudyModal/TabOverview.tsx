@@ -1,11 +1,13 @@
 import * as React from 'react';
 import './TabOverview.css';
+import * as Moment from 'moment';
 
 // import { Dialog, Spinner, Tab2, Tabs2 } from '@blueprintjs/core';
 
-// import { IAPIStudy } from './../../../models/study.model';
+import { IAPIStudy } from './../../../models/study.model';
 
 interface ITabOverviewProps {
+  studyData: IAPIStudy;
 }
 
 interface ITabOverviewState {
@@ -26,7 +28,13 @@ class TabOverview extends React.Component<ITabOverviewProps, ITabOverviewState> 
   }
 
   public render() {
-    return <div>Overview</div>;
+    return (
+      <div>
+        <span>Study Created At: {Moment(this.props.studyData.createdAt).format('HH:mm MM-DD-YYYY')}</span>
+        <br/>
+        <span>Study Last Updated At: {Moment(this.props.studyData.updatedAt).fromNow()}</span>
+      </div>
+    );
   }
 }
 

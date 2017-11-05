@@ -1,12 +1,14 @@
 import * as React from 'react';
 import './StudyModal.css';
 
-import { Dialog, Spinner, Tab2, Tabs2 } from '@blueprintjs/core';
+import { Dialog, Spinner, Tab2, Tabs2, EditableText } from '@blueprintjs/core';
 
 import { IAPIStudy } from './../../../models/study.model';
 import TabOverview from './TabOverview';
 import TabParticipants from './TabParticipants';
 import TabScheduling from './TabScheduling';
+
+// import { BarSeries } from 'react-vis';
 
 interface IStudyModalProps {
   isOpen: boolean;
@@ -55,6 +57,14 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
     console.log('Tab changed');
   }
 
+  public handleEditTitle() {
+    console.log('Title Edited');
+  }
+
+  public handleEditDescription() {
+    console.log('Description Edited');
+  }
+
   public render() {
 
     if (this.state.loading) {
@@ -78,16 +88,38 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
           onClose={() => this.props.closeStudy()}
         >
           <div className="pt-dialog-body">
-            <h3>{this.state.studyData.title}</h3>
-            <p>{this.state.studyData.description}</p>
+            <h3>
+              <EditableText
+                defaultValue={this.state.studyData.title}
+                onChange={this.handleEditTitle}
+              />
+            </h3>
+            <p>
+              <EditableText
+                defaultValue={this.state.studyData.description}
+                onChange={this.handleEditDescription}
+              />
+            </p>
 
             <Tabs2 
               id="study_tabs"
               onChange={this.handleTabChange}
             >
-              <Tab2 id="tab_overview" title="Overview" panel={<TabOverview/>}/>
-              <Tab2 id="tab_participants" title="Participants" panel={<TabParticipants/>}/>
-              <Tab2 id="tab_scheduling" title="Schedules & Tasks" panel={<TabScheduling/>}/>
+              <Tab2 
+                id="tab_overview" 
+                title="Overview"
+                panel={<TabOverview studyData={this.state.studyData}/>}
+              />
+              <Tab2 
+                id="tab_participants" 
+                title="Participants" 
+                panel={<TabParticipants studyData={this.state.studyData}/>}
+              />
+              <Tab2 
+                id="tab_scheduling" 
+                title="Schedules & Tasks" 
+                panel={<TabScheduling studyData={this.state.studyData}/>}
+              />
             </Tabs2>
 
           </div>
