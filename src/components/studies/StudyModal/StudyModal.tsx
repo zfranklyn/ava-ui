@@ -38,6 +38,7 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
         createdAt: '',
         updatedAt: '',
         tasks: [],
+        users: [],
       }
     };
   }
@@ -94,12 +95,12 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
                 onChange={this.handleEditTitle}
               />
             </h3>
-            <p>
+            <span>
               <EditableText
                 defaultValue={this.state.studyData.description}
                 onChange={this.handleEditDescription}
               />
-            </p>
+            </span>
 
             <Tabs2 
               id="study_tabs"

@@ -1,4 +1,5 @@
 import { IAPITask, /*ITask*/ } from './task.model';
+import { IUser } from './user.model';
 
 export interface IAPIStudy {
   id: string;
@@ -9,6 +10,7 @@ export interface IAPIStudy {
   createdAt: string;
   updatedAt: string;
   tasks: IAPITask[];
+  users: IUser[];
 }
 
 export interface IStudy {
@@ -20,6 +22,7 @@ export interface IStudy {
   createdAt: Date;
   updatedAt: Date;
   tasks: IAPITask[];
+  users: IUser[];
 }
 
 // export class Study implements IStudy {

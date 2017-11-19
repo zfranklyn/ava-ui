@@ -2,7 +2,7 @@ import * as React from 'react';
 import './StudyNavigation.css';
 import { ISearchConditions } from '../StudySection';
 
-import { Switch } from '@blueprintjs/core';
+import { Switch, AnchorButton } from '@blueprintjs/core';
 
 interface IStudyNavigationProps {
     title: string;
@@ -62,6 +62,11 @@ class StudyNavigation extends React.Component<IStudyNavigationProps, IStudyNavig
               label="View Active Studies Only" 
               checked={this.state.searchConditions.active}
               onChange={this.handleToggleActive}
+            />
+            <AnchorButton
+              rightIconName="add"
+              text="Add Study"
+              className="pt-intent-primary pt-large"
             />
           </div>
         </div>
