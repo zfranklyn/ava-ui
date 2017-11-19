@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './StudyModal.css';
-
+import * as Moment from 'moment';
 import { Dialog, Spinner, Tab2, Tabs2, EditableText } from '@blueprintjs/core';
 
 import { IAPIStudy } from './../../../models/study.model';
@@ -18,7 +18,7 @@ interface IStudyModalProps {
 
 interface IStudyModalState {
   loading: boolean;
-  studyData: IAPIStudy;
+  studyData: IAPIStudy | null;
 }
 
 class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
@@ -29,17 +29,7 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
     super(props);
     this.state = {
       loading: true,
-      studyData: {
-        id: '',
-        title: '',
-        description: '',
-        metadata: '{}',
-        active: false,
-        createdAt: '',
-        updatedAt: '',
-        tasks: [],
-        users: [],
-      }
+      studyData: null,
     };
   }
 
@@ -68,15 +58,15 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
 
   public render() {
 
-    if (this.state.loading) {
+    if (this.state.loading || !this.state.studyData) {
       return (
         <Dialog 
           className="study-modal"
-          title={this.props.currentStudyId}
+          title="Loading..."
           isOpen={this.props.isOpen}
           onClose={() => this.props.closeStudy()}
         >
-          <Spinner className="pt-small"/>
+          <Spinner className="pt-small spinner"/>
         </Dialog>
       );
     } else {
@@ -84,23 +74,25 @@ class StudyModal extends React.Component<IStudyModalProps, IStudyModalState> {
       return (
         <Dialog 
           className="study-modal"
-          title="Study Details"
+          title={this.state.studyData.title}
           isOpen={this.props.isOpen}
           onClose={() => this.props.closeStudy()}
         >
           <div className="pt-dialog-body">
-            <h3>
-              <EditableText
-                defaultValue={this.state.studyData.title}
-                onChange={this.handleEditTitle}
-              />
-            </h3>
             <span>
               <EditableText
                 defaultValue={this.state.studyData.description}
                 onChange={this.handleEditDescription}
               />
             </span>
+            <div>
+              <span className="small-text">
+                Study Created At: {Moment(this.state.studyData.createdAt).format('HH:mm MM-DD-YYYY')}
+              </span>
+              <span className="small-text">
+                Study Last Updated At: {Moment(this.state.studyData.updatedAt).fromNow()}
+              </span>
+            </div>
 
             <Tabs2 
               id="study_tabs"

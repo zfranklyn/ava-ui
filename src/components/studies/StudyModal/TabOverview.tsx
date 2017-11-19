@@ -1,8 +1,8 @@
 import * as React from 'react';
 import './TabOverview.css';
-import * as Moment from 'moment';
 
 // import { Dialog, Spinner, Tab2, Tabs2 } from '@blueprintjs/core';
+let ReactVis = require('react-vis');
 
 import { IAPIStudy } from './../../../models/study.model';
 
@@ -23,16 +23,26 @@ class TabOverview extends React.Component<ITabOverviewProps, ITabOverviewState> 
     };
   }
 
-  public componentDidMount() {
-    console.log('Overview Tab Mounted');
+  private renderDonutChart = (responseRate: number, title: string) => {
+    const colorRange = ['#BFCCD6', '#2B95D6'];
+    const data = [{angle: (responseRate / 100), colorType: 0, radius: 5, innerRadius: 4},
+                  {angle: 1 - (responseRate / 100), colorType: 1, radius: 5, innerRadius: 4},
+                  ];
+    return (
+      <ReactVis.RadialChart
+        colorRange={colorRange}
+        data={data}
+        width={60}
+        height={60}
+      />
+    );
   }
 
   public render() {
     return (
       <div>
-        <span>Study Created At: {Moment(this.props.studyData.createdAt).format('HH:mm MM-DD-YYYY')}</span>
-        <br/>
-        <span>Study Last Updated At: {Moment(this.props.studyData.updatedAt).fromNow()}</span>
+        Hello
+        {this.renderDonutChart(75, 'Average Response Rate')}
       </div>
     );
   }
