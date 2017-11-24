@@ -13,3 +13,14 @@ export interface IStatusAPI {
   createdAt: string;
   updatedAt: string;
 }
+
+export const convertStatus = (rawData: IStatusAPI): IStatus => {
+  const { completed, completionTime, id, createdAt, updatedAt } = rawData;
+  return {
+    completed,
+    completionTime: new Date(completionTime),
+    id,
+    createdAt: new Date(createdAt),
+    updatedAt: new Date(updatedAt),
+  };
+};

@@ -22,7 +22,18 @@ export interface ITask {
 export interface ITaskAPI {
   scheduledTime: string;
   type: string;
-  id?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }
+
+export const convertTask = (rawData: ITaskAPI): ITask => {
+  const { scheduledTime, type, id, createdAt, updatedAt } = rawData;
+  return {
+    scheduledTime: new Date(scheduledTime),
+    type: type as TaskType,
+    id,
+    createdAt: new Date(createdAt),
+    updatedAt: new Date(updatedAt),
+  };
+};

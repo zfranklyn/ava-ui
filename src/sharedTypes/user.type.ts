@@ -34,3 +34,19 @@ export interface IUserAPI {
   createdAt: string;
   updatedAt: string;
 }
+
+export const convertUser = (rawData: IUserAPI): IUser => {
+  const { firstName, lastName, email, userType, userRole, notes, metadata, id, createdAt, updatedAt } = rawData;
+  return {
+    firstName,
+    lastName,
+    email,
+    userType: userType as UserType,
+    userRole: userRole as UserRoleType,
+    notes,
+    metadata: JSON.parse(metadata),
+    id,
+    createdAt: new Date(createdAt),
+    updatedAt: new Date(updatedAt),
+  };
+};

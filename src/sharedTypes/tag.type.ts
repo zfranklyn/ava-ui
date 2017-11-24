@@ -26,3 +26,14 @@ export interface ITagAPI {
   createdAt: string;
   updatedAt: string;
 }
+
+export const convertTag = (rawData: ITagAPI): ITag => {
+  const { text, color, id, createdAt, updatedAt } = rawData;
+  return {
+    text,
+    color: color as Color,
+    id,
+    createdAt: new Date(createdAt),
+    updatedAt: new Date(updatedAt),
+  };
+};

@@ -41,3 +41,15 @@ export interface IMessageAPI {
   createdAt: string;
   updatedAt: string;
 }
+
+export const convertMessage = (rawData: IMessageAPI): IMessage => {
+  const { content, messageType, mediumType, id, createdAt, updatedAt } = rawData;
+  return {
+    content,
+    messageType: messageType as MessageType,
+    mediumType: mediumType as MediumType,
+    id,
+    createdAt: new Date(createdAt),
+    updatedAt: new Date(updatedAt),
+  };
+};
