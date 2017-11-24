@@ -17,7 +17,7 @@ class AppContainer extends React.Component<{}, {}> {
       <Router>
         <div>
           <div className="ava-container">
-            <NavbarComponent />
+            <NavbarComponent/>
             <Route path="/studies" component={StudySection}/>
             <Route path="/study/:studyId" component={StudyDetails}/>
             <Route path="/users" component={UserSection}/>
