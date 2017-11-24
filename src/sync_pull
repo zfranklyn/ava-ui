@@ -1,0 +1,5 @@
+#! /bin/bash
+echo "removing type files in UI"
+rm -r ./sharedTypes
+echo "copying files from API"
+cp -r ../../ava-api/src/db/sharedTypes .
