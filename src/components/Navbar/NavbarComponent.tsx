@@ -19,7 +19,7 @@ class NavbarComponent extends React.Component<{}, {}> {
               </Tooltip>
             </div>
           </Link>
-          <Link to="/participants">
+          <Link to="/users">
             <div className="sidebar-button">
               <Tooltip content="Participants" position={Position.RIGHT}>
                 <Icon iconName={IconClasses.PEOPLE} iconSize={Icon.SIZE_LARGE}/>
