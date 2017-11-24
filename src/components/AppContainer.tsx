@@ -6,9 +6,9 @@ import {
 
 import './AppContainer.css';
 
-import NavbarComponent from './NavbarComponent';
-import StudySection from './studies/StudySection';
-import ParticipantSection from './participants/ParticipantSection';
+import NavbarComponent from './Navbar/NavbarComponent';
+import StudySection from './Studies/StudySection';
+import UserSection from './Users/UserSection';
 
 class AppContainer extends React.Component<{}, {}> {
   render() {
@@ -18,7 +18,7 @@ class AppContainer extends React.Component<{}, {}> {
           <div className="ava-container">
             <NavbarComponent />
             <Route path="/studies" component={StudySection}/>
-            <Route path="/participants" component={ParticipantSection}/>
+            <Route path="/users" component={UserSection}/>
           </div>
         </div>
       </Router>

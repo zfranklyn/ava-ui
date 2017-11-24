@@ -1,9 +1,0 @@
-.table-container {
-  max-height: 400px;
-  overflow: scroll;
-  border: 1px solid gray;
-}
-
-.pt-table {
-  width: 100%;
-}

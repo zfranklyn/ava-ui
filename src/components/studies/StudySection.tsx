@@ -1,90 +1,122 @@
 import * as React from 'react';
+import {
+  Spinner
+} from '@blueprintjs/core';
+import {
+  // Link
+} from 'react-router-dom';
 import './StudySection.css';
+import {
+  IStudy,
+  IStudyAPI,
+  convertStudy,
+} from './../../sharedTypes';
 
-import StudyNavigation from './StudyNavigation/StudyNavigation';
-import StudyList from './StudyList/StudyList';
-import StudyModal from './StudyModal/StudyModal';
-
-import { IAPIStudy } from './../../models/study.model';
-
+/*
+  React Router V4 automatically pushes a history object onto the props hash of child components
+  under BrowserRouter:
+  https://stackoverflow.com/questions/39894547/navigating-programmatically-in-react-router-v4
+  This allows us to access a `history` object on child components without ever explicitly
+  passing down the object into the child's props
+*/
 export interface IStudySectionProps {
-  title: string;
-}
-
-export interface ISearchConditions {
-  searchTerm: string;
-  active: boolean;
+  history: any[];
 }
 
 export interface IStudySectionState {
-  searchConditions: ISearchConditions;
-  studies: IAPIStudy[];
-  currentStudyId: string;
-  modalOpen: boolean;
+  studies: IStudy[];
 }
 
 class StudySection extends React.Component<IStudySectionProps, IStudySectionState> {
 
-  public constructor(props?: IStudySectionProps) {
+  constructor(props: IStudySectionProps) {
     super(props);
     this.state = {
-      searchConditions: {
-        searchTerm: '', 
-        active: false
-      },
-      currentStudyId: '',
-      studies: [],
-      modalOpen: false,
+      studies: []
     };
   }
 
+  private navigateToStudy = (studyId: any) => (
+    this.props.history.push(`/study/${studyId}`)
+  )
+
+  private headersToShow = [
+    {headerToRender: 'Title', headerInDB: 'title'},
+    {headerToRender: 'Description', headerInDB: 'description'},
+    {headerToRender: 'Active', headerInDB: 'active'},
+  ];
+
   public componentDidMount() {
-    fetch('http://localhost:8080/studies')
-      .then(res => res.json())
-      .then((studies: IAPIStudy[]) => {
-        this.setState({
-          studies
-        });
+    this.updateStudies();
+  }
+
+  private updateStudies = () => {
+    fetch(`http://localhost:8080/studies`)
+    .then((res: Response) => res.json())
+    .then((studies: IStudyAPI[]) => {
+      // Convert API format into JS object format:
+      const convertedStudies = studies.map(convertStudy);
+      return this.setState({
+        studies: convertedStudies,
       });
+    })
+    .catch(console.log);
   }
 
-  public modifySearchConditions = async (newConditions: ISearchConditions) => {
-    await this.setState({
-      searchConditions: newConditions,
-    });
+  private renderTableRows = (studies: IStudy[]) => {
+    // const headerNames = Object.keys(studies[0]);
+    const headerNamesInDB = this.headersToShow.map(h => h.headerInDB);
+    return (
+      <tbody>
+        {studies.map((study: IStudy, key1: number) => {
+          return (
+            <tr key={key1} onClick={() => this.navigateToStudy(study.id)}>
+              {headerNamesInDB.map((header: any, key2: number) => {
+                return (
+                  <td key={key2}>
+                    {`${study[header]}`}
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    );
   }
 
-  public openStudy = (id: string) => {
-    this.setState({
-      currentStudyId: id,
-      modalOpen: true,
-    });
+  private renderTableHeaders = (studies: IStudy[]) => {
+    const headerNamesToRender = this.headersToShow.map(h => h.headerToRender);
+    return (
+      <thead>
+        <tr>
+          {headerNamesToRender.map((h: string, index: number) => <td key={index}>{h}</td>)}
+        </tr>
+      </thead>
+    );
   }
 
-  public closeStudy = () => {
-    this.setState({
-      modalOpen: false,
-    });
+  private renderStudyTable = (studies: IStudy[]) => {
+    return (
+      <table className="pt-table pt-interactive">
+        {this.renderTableHeaders(studies)}
+        {this.renderTableRows(studies)}
+      </table>
+    );
   }
 
   public render() {
+
+    let StudyTable = <Spinner/>;
+
+    if (this.state.studies.length) {
+      StudyTable = this.renderStudyTable(this.state.studies);
+    }
+
     return (
       <div className="study-section">
-        <StudyNavigation 
-          title={'Studies'} 
-          modifySearchConditions={this.modifySearchConditions}
-          searchConditions={this.state.searchConditions}
-        />
-        <StudyList studies={this.state.studies} openStudy={this.openStudy} closeStudy={this.closeStudy}/>
-        {(this.state.modalOpen) ? 
-          <StudyModal 
-            isOpen={this.state.modalOpen} 
-            currentStudyId={this.state.currentStudyId} 
-            closeStudy={this.closeStudy}
-          />
-          : null
-        }
-
+        <h1>Study Section</h1>
+        {StudyTable}
       </div>
     );
   }

@@ -8,7 +8,9 @@ class NavbarComponent extends React.Component<{}, {}> {
   render() {
     return (
       <nav className="sidebar">
-        <div className="sidebar-logo"/>
+        <Link to="/studies">
+          <div className="sidebar-logo"/>
+        </Link>
         <div className="sidebar-group">
           <Link to="/studies">
             <div className="sidebar-button">
