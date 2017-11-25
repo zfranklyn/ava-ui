@@ -87,9 +87,8 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     const currentSortBy = this.state.sortBy;
     const currentSortOrder = this.state.sortOrder;
 
-    console.log(studies);
+    // sort studies by params specified in this.state; default sort by updatedBy and title
     studies = _.orderBy(studies, [`${currentSortBy}`, `updatedBy`, `title`], [`${currentSortOrder}`, 'desc', 'desc']);
-    console.log(studies);
 
     return (
       <tbody>

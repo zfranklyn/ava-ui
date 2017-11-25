@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {
+  Button,
   Spinner,
+  Dialog,
 } from '@blueprintjs/core';
-import {
-  // Link
-} from 'react-router-dom';
 import './TasksTab.css';
+import ExistingTaskModal from './ExistingTaskModal';
+import NewTaskModal from './NewTaskModal';
 import {
   ITaskAPI,
   ITask,
@@ -19,6 +20,9 @@ export interface ITasksTabProps {
 
 export interface ITasksTabState {
   tasks: ITask[];
+  newTaskModalOpen: boolean;
+  existingTaskModalOpen: boolean;
+  currentTask: ITask | null;
 }
 
 class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
@@ -27,6 +31,9 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     super(props);
     this.state = {
       tasks: [],
+      newTaskModalOpen: false,
+      existingTaskModalOpen: false,
+      currentTask: null,
     };
   }
 
@@ -61,7 +68,11 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
       <tbody>
         {studies.map((task: ITask, key1: number) => {
           return (
-            <tr key={key1} onClick={console.log} className={`${task.completed ? 'completed' : ''}`}>
+            <tr
+              key={key1}
+              onClick={() => this.toggleExistingTaskModal(task)}
+              className={`${task.completed ? 'completed' : ''}`}
+            >
               {headerNamesInDB.map((header: any, key2: number) => {
 
                 let cellContents;
@@ -114,17 +125,52 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     );
   }
 
+  private toggleNewTaskModal = () => {
+    const { newTaskModalOpen } = this.state;
+    this.setState({
+      newTaskModalOpen: !newTaskModalOpen,
+    });
+  }
+
+  private toggleExistingTaskModal = (task: any) => {
+    const { existingTaskModalOpen } = this.state;
+    this.setState({
+      currentTask: task,
+      existingTaskModalOpen: !existingTaskModalOpen,
+    });
+  }
+
   public render() {
 
     let TaskTable = <Spinner/>;
+    let ExistingTaskModalVar = <div>No Task Specified</div>;
 
     if (this.state.tasks.length) {
       TaskTable = this.renderTaskTable(this.state.tasks);
     }
 
+    if (this.state.currentTask) {
+      ExistingTaskModalVar = <ExistingTaskModal task={this.state.currentTask}/>;
+    }
+
     return (
       <div className="tasks-tab">
+        <Button text="Create Tasks" onClick={() => this.toggleNewTaskModal()}/>
         {TaskTable}
+        
+        <Dialog
+          isOpen={this.state.newTaskModalOpen}
+          onClose={this.toggleNewTaskModal}
+        >
+          <NewTaskModal/>
+        </Dialog>
+        <Dialog
+          isOpen={this.state.existingTaskModalOpen}
+          onClose={this.toggleExistingTaskModal}
+        >
+          {ExistingTaskModalVar}
+        </Dialog>
+
       </div>
     );
   }
