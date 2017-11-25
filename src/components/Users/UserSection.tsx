@@ -63,9 +63,17 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
           return (
             <tr key={key1}>
               {headerNamesInDB.map((header: any, key2: number) => {
+
+                let cellContents;
+                switch (header) {
+                  default:
+                    cellContents = `${study[header]}`;
+                    break;
+                }
+
                 return (
                   <td key={key2}>
-                    {`${study[header]}`}
+                    {cellContents}
                   </td>
                 );
               })}
@@ -89,7 +97,7 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
 
   private renderUserTable = (studies: IUser[]) => {
     return (
-      <table className="pt-table pt-interactive">
+      <table className="pt-table pt-interactive" style={{width: '100%'}}>
         {this.renderTableHeaders(studies)}
         {this.renderTableRows(studies)}
       </table>

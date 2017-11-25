@@ -8,6 +8,7 @@ import {
   // Link
 } from 'react-router-dom';
 import './StudyDetails.css';
+import TasksTab from './Tasks/TasksTab';
 import {
   IStudy,
   IStudyAPI,
@@ -92,7 +93,7 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
 
     if (this.state.study) {
       StudyDetailsComponent = (
-        <div>
+        <div className="study-details-toolbar">
           <div>
             <h4>{this.state.study.title}</h4>
             <p>
@@ -100,9 +101,16 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
             </p>
           </div>
           <div className="tab-section">
-            <Tabs2 id="study_tabs" onChange={this.handleTabChange}>
+            <Tabs2 id="study_tabs" onChange={this.handleTabChange} renderActiveTabPanelOnly={true}>
               <Tab2 title="Overview" id="OVERVIEW" panel={<p>Hello</p>}/>
-              <Tab2 title="Tasks" id="TASKS" panel={<p>Hello</p>}/> 
+              <Tab2 
+                title="Tasks"
+                id="TASKS"
+                panel={
+                  <TasksTab
+                    studyId={this.state.study.id}
+                  />}
+              /> 
               <Tab2 title="Participants" id="PARTICIPANTS" panel={<p>Hello</p>}/> 
               <Tab2 title="Messages" id="MESSAGES" panel={<p>Hello</p>}/>  
               <Tab2 title="Settings" id="SETTINGS" panel={<p>Hello</p>}/>  
@@ -113,7 +121,7 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
     }
 
     return (
-      <div className="study-section">
+      <div className="study-details-section">
         {StudyDetailsComponent}
       </div>
     );

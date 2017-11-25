@@ -33,7 +33,6 @@ class NavbarComponent extends React.Component<INavbarProps, INavbarState> {
   }
 
   render() {
-    console.log(this);
     return (
       <nav className="sidebar">
         <Link to="/studies" onClick={() => this.handleChangeTab(MENU_OPTIONS.STUDIES)}>

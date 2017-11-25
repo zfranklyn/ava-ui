@@ -1,16 +1,20 @@
 import * as React from 'react';
 import {
-  Spinner
+  Spinner,
+  AnchorButton,
+  Dialog,
 } from '@blueprintjs/core';
 import {
   // Link
 } from 'react-router-dom';
+import NewStudyModal from './NewStudyModal/NewStudyModal';
 import './StudySection.css';
 import {
   IStudy,
   IStudyAPI,
   convertStudy,
 } from './../../sharedTypes';
+import * as moment from 'moment';
 
 /*
   React Router V4 automatically pushes a history object onto the props hash of child components
@@ -25,6 +29,7 @@ export interface IStudySectionProps {
 
 export interface IStudySectionState {
   studies: IStudy[];
+  newStudyModal: boolean;
 }
 
 class StudySection extends React.Component<IStudySectionProps, IStudySectionState> {
@@ -32,7 +37,8 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
   constructor(props: IStudySectionProps) {
     super(props);
     this.state = {
-      studies: []
+      studies: [],
+      newStudyModal: false,
     };
   }
 
@@ -41,9 +47,11 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
   )
 
   private headersToShow = [
-    {headerToRender: 'Title', headerInDB: 'title'},
+    {headerToRender: 'Study Name', headerInDB: 'title'},
     {headerToRender: 'Description', headerInDB: 'description'},
-    {headerToRender: 'Active', headerInDB: 'active'},
+    {headerToRender: 'Status', headerInDB: 'active'},
+    {headerToRender: 'Last Modified', headerInDB: 'updatedAt'},
+    {headerToRender: 'Creation Date', headerInDB: 'createdAt'},
   ];
 
   public componentDidMount() {
@@ -56,6 +64,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     .then((studies: IStudyAPI[]) => {
       // Convert API format into JS object format:
       const convertedStudies = studies.map(convertStudy);
+      console.log(convertedStudies);
       return this.setState({
         studies: convertedStudies,
       });
@@ -72,9 +81,27 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
           return (
             <tr key={key1} onClick={() => this.navigateToStudy(study.id)}>
               {headerNamesInDB.map((header: any, key2: number) => {
+
+                let cellContents;
+                // varied rendering logic
+                switch (header) {
+                  case 'createdAt':
+                    cellContents = moment(study[header]).format('MMM D, YYYY HH:MM');
+                    break;
+                  case 'updatedAt':
+                    cellContents = moment(study[header]).format('MMM D, YYYY HH:MM');
+                    break;
+                  case 'active':
+                    cellContents = (study[header] ? 'Active' : 'Inactive');
+                    break;
+                  default:
+                    cellContents = `${study[header]}`;
+                    break;
+                }
+
                 return (
                   <td key={key2}>
-                    {`${study[header]}`}
+                    {cellContents}
                   </td>
                 );
               })}
@@ -98,11 +125,18 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
 
   private renderStudyTable = (studies: IStudy[]) => {
     return (
-      <table className="pt-table pt-interactive">
+      <table className="pt-table pt-interactive" style={{width: '100%'}}>
         {this.renderTableHeaders(studies)}
         {this.renderTableRows(studies)}
       </table>
     );
+  }
+
+  public toggleNewStudyModal = () => {
+    const newStudyModalState = this.state.newStudyModal;
+    this.setState({
+      newStudyModal: !newStudyModalState,
+    });
   }
 
   public render() {
@@ -115,8 +149,32 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
 
     return (
       <div className="study-section">
-        <h1>Study Section</h1>
-        {StudyTable}
+        <div className="toolbar">
+          <h3>Studies</h3>
+          <input className="pt-input" placeholder="Search..."/>
+          <AnchorButton
+            text="Create Study"
+            iconName="add"
+            className="pt-intent-primary"
+            onClick={this.toggleNewStudyModal}
+          />
+        </div>
+        <div className="study-table">
+          {StudyTable}
+        </div>
+        <Dialog
+          iconName="inbox"
+          title="New Study"
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+          isOpen={this.state.newStudyModal}
+          onClose={this.toggleNewStudyModal}
+        >
+          <NewStudyModal
+            toggleNewStudyModal={this.toggleNewStudyModal}
+            updateStudies={this.updateStudies}
+          />
+        </Dialog>
       </div>
     );
   }
