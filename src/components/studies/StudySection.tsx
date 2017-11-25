@@ -3,6 +3,7 @@ import {
   Spinner,
   AnchorButton,
   Dialog,
+  Switch,
 } from '@blueprintjs/core';
 import {
   // Link
@@ -15,6 +16,7 @@ import {
   convertStudy,
 } from './../../sharedTypes';
 import * as moment from 'moment';
+import * as _ from 'lodash';
 
 /*
   React Router V4 automatically pushes a history object onto the props hash of child components
@@ -30,6 +32,9 @@ export interface IStudySectionProps {
 export interface IStudySectionState {
   studies: IStudy[];
   newStudyModal: boolean;
+  viewArchived: boolean;
+  sortBy: string; // the various headers
+  sortOrder: string; // 'ASCE', 'DESC'
 }
 
 class StudySection extends React.Component<IStudySectionProps, IStudySectionState> {
@@ -39,6 +44,9 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     this.state = {
       studies: [],
       newStudyModal: false,
+      viewArchived: false,
+      sortBy: 'updatedAt',
+      sortOrder: 'desc',
     };
   }
 
@@ -52,6 +60,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     {headerToRender: 'Status', headerInDB: 'active'},
     {headerToRender: 'Last Modified', headerInDB: 'updatedAt'},
     {headerToRender: 'Creation Date', headerInDB: 'createdAt'},
+    {headerToRender: 'Archived', headerInDB: 'archived'},
   ];
 
   public componentDidMount() {
@@ -73,8 +82,15 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
   }
 
   private renderTableRows = (studies: IStudy[]) => {
-    // const headerNames = Object.keys(studies[0]);
     const headerNamesInDB = this.headersToShow.map(h => h.headerInDB);
+
+    const currentSortBy = this.state.sortBy;
+    const currentSortOrder = this.state.sortOrder;
+
+    console.log(studies);
+    studies = _.orderBy(studies, [`${currentSortBy}`, `updatedBy`, `title`], [`${currentSortOrder}`, 'desc', 'desc']);
+    console.log(studies);
+
     return (
       <tbody>
         {studies.map((study: IStudy, key1: number) => {
@@ -117,13 +133,38 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     return (
       <thead>
         <tr>
-          {headerNamesToRender.map((h: string, index: number) => <td key={index}>{h}</td>)}
+          {
+            headerNamesToRender.map(
+              (h: string, index: number) => {
+                
+                const id = this.headersToShow.filter((obj) => obj.headerToRender === h)[0].headerInDB;
+                let style = STYLES.header;
+                if (this.state.sortBy === id) {
+                  style = Object.assign({}, style, STYLES.header_active);
+                }
+                return (
+                  <td 
+                    id={id}
+                    key={index}
+                    onClick={(e) => this.handleSortChange(e)}
+                    style={style}
+                  >
+                    {h}
+                  </td>
+                );
+                
+              }
+            )
+          }
         </tr>
       </thead>
     );
   }
 
   private renderStudyTable = (studies: IStudy[]) => {
+    if (this.state.viewArchived) {
+      studies = studies.filter((s: IStudy) => s.archived);
+    }
     return (
       <table className="pt-table pt-interactive" style={{width: '100%'}}>
         {this.renderTableHeaders(studies)}
@@ -139,6 +180,30 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     });
   }
 
+  private handleViewArchived = () => {
+    const viewArchived = this.state.viewArchived;
+    this.setState({
+      viewArchived: !viewArchived,
+    });
+  }
+
+  private handleSortChange = (e: any) => {
+    const newSortBy = e.target.id;
+    const currentSortBy = this.state.sortBy;
+    const currentSortOrder = this.state.sortOrder;
+    if (newSortBy === currentSortBy) {
+      this.setState({
+        sortOrder: (currentSortOrder === 'desc' ? 'asce' : 'desc'),
+      });
+    } else {
+      this.setState({
+        sortBy: newSortBy,
+        sortOrder: 'desc',
+      });
+    }
+    console.log(this.state);
+  }
+
   public render() {
 
     let StudyTable = <Spinner/>;
@@ -152,6 +217,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
         <div className="toolbar">
           <h3>Studies</h3>
           <input className="pt-input" placeholder="Search..."/>
+          <Switch checked={this.state.viewArchived} label="View Archived" onChange={this.handleViewArchived}/>
           <AnchorButton
             text="Create Study"
             iconName="add"
@@ -179,5 +245,14 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     );
   }
 }
+
+const STYLES = {
+  header_active: {
+    fontWeight: 800,
+  },
+  header: {
+    cursor: 'pointer',
+  }
+};
 
 export default StudySection;
