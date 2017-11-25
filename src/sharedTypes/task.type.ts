@@ -11,8 +11,7 @@ export const TASK_TYPE = {
 export type TaskType =
   'CUSTOM_MESSAGE'
   |'SURVEY'
-  |'REMINDER'
-  |'RESET';
+  |'REMINDER';
 
 export interface ITask {
   scheduledTime: Date;

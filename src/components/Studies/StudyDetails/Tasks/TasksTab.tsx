@@ -19,10 +19,11 @@ export interface ITasksTabProps {
 }
 
 export interface ITasksTabState {
+  loadingTasks: boolean;
   tasks: ITask[];
   newTaskModalOpen: boolean;
   existingTaskModalOpen: boolean;
-  currentTask: ITask | null;
+  currentTaskId: string | null;
 }
 
 class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
@@ -30,10 +31,11 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
   constructor(props: ITasksTabProps) {
     super(props);
     this.state = {
+      loadingTasks: false,
       tasks: [],
       newTaskModalOpen: false,
       existingTaskModalOpen: false,
-      currentTask: null,
+      currentTaskId: null,
     };
   }
 
@@ -47,16 +49,20 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
   ];
 
   public componentDidMount() {
-    this.updateTaskData();
+    this.updateTasksData();
   }
 
-  private updateTaskData = () => {
+  private updateTasksData = () => {
+    this.setState({
+      loadingTasks: true,
+    });
     fetch(`http://localhost:8080/tasks/study/${this.props.studyId}`)
     .then((res: Response) => res.json())
     .then((tasks: ITaskAPI[]) => {
       const convertedTasks: ITask[] = tasks.map(convertTask);
       this.setState({
         tasks: convertedTasks,
+        loadingTasks: false,
       });
     })
     .catch(console.log);
@@ -70,7 +76,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
           return (
             <tr
               key={key1}
-              onClick={() => this.toggleExistingTaskModal(task)}
+              onClick={() => this.toggleExistingTaskModal(task.id)}
               className={`${task.completed ? 'completed' : ''}`}
             >
               {headerNamesInDB.map((header: any, key2: number) => {
@@ -135,22 +141,29 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
   private toggleExistingTaskModal = (task: any) => {
     const { existingTaskModalOpen } = this.state;
     this.setState({
-      currentTask: task,
+      currentTaskId: task,
       existingTaskModalOpen: !existingTaskModalOpen,
     });
   }
 
   public render() {
 
-    let TaskTable = <Spinner/>;
+    let TaskTable = (this.state.loadingTasks ? <Spinner/> : <div>No Tasks</div>);
     let ExistingTaskModalVar = <div>No Task Specified</div>;
 
     if (this.state.tasks.length) {
       TaskTable = this.renderTaskTable(this.state.tasks);
     }
 
-    if (this.state.currentTask) {
-      ExistingTaskModalVar = <ExistingTaskModal task={this.state.currentTask}/>;
+    // Only renders if there is a task defined
+    if (this.state.currentTaskId) {
+      ExistingTaskModalVar = (
+        <ExistingTaskModal
+          taskId={this.state.currentTaskId}
+          toggleExistingTaskModal={this.toggleExistingTaskModal}
+          updateTasksData={this.updateTasksData}
+        />
+      );
     }
 
     return (

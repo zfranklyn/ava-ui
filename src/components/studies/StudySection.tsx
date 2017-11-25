@@ -73,7 +73,6 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     .then((studies: IStudyAPI[]) => {
       // Convert API format into JS object format:
       const convertedStudies = studies.map(convertStudy);
-      console.log(convertedStudies);
       return this.setState({
         studies: convertedStudies,
       });
@@ -200,7 +199,6 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
         sortOrder: 'desc',
       });
     }
-    console.log(this.state);
   }
 
   public render() {
