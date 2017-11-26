@@ -84,11 +84,14 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
                 let cellContents;
                 // varied rendering logic
                 switch (header) {
+                  case 'scheduledTime':
+                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:MM A');
+                    break;
                   case 'createdAt':
-                    cellContents = moment(task[header]).format('MMM D, YYYY HH:MM');
+                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:MM A');
                     break;
                   case 'updatedAt':
-                    cellContents = moment(task[header]).format('MMM D, YYYY HH:MM');
+                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:MM A');
                     break;
                   case 'completed':
                     cellContents = (task[header] ? 'Completed' : 'Pending');
@@ -166,6 +169,17 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
       );
     }
 
+    let NewTaskModalVar = <div>No Task Specified</div>;
+    if (this.props.studyId) {
+      NewTaskModalVar = (
+        <NewTaskModal
+          studyId={this.props.studyId}
+          updateTasksData={this.updateTasksData}
+          toggleNewTaskModal={this.toggleNewTaskModal}
+        />
+      );
+    }
+
     return (
       <div className="tasks-tab">
         <Button text="Create Tasks" onClick={() => this.toggleNewTaskModal()}/>
@@ -174,10 +188,12 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
         <Dialog
           isOpen={this.state.newTaskModalOpen}
           onClose={this.toggleNewTaskModal}
+          title="Create New Task"
         >
-          <NewTaskModal/>
+          {NewTaskModalVar}
         </Dialog>
         <Dialog
+          title="Edit Task"
           isOpen={this.state.existingTaskModalOpen}
           onClose={this.toggleExistingTaskModal}
         >

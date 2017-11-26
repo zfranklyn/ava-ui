@@ -106,6 +106,7 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
     this.setState({
       deleting: true,
     });
+
     axios.delete(`http://localhost:8080/task/${this.state.task.id}`)
     .then(() => {
       this.props.toggleExistingTaskModal();
