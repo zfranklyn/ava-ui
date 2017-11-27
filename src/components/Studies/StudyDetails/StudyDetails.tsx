@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 import './StudyDetails.css';
 import TasksTab from './Tasks/TasksTab';
+import ParticipantsTab from './Participants/ParticipantsTab';
 import {
   IStudy,
   IStudyAPI,
@@ -91,7 +92,7 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
 
     let StudyDetailsComponent = <Spinner/>;
 
-    if (this.state.study) {
+    if (this.state.study && this.state.study.id) {
       StudyDetailsComponent = (
         <div className="study-details-toolbar">
           <div>
@@ -111,7 +112,15 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
                     studyId={this.state.study.id}
                   />}
               /> 
-              <Tab2 title="Participants" id="PARTICIPANTS" panel={<p>Hello</p>}/> 
+              <Tab2
+                title="Participants"
+                id="PARTICIPANTS"
+                panel={
+                <ParticipantsTab
+                  studyId={this.state.study.id}
+                />
+                }
+              /> 
               <Tab2 title="Messages" id="MESSAGES" panel={<p>Hello</p>}/>  
               <Tab2 title="Settings" id="SETTINGS" panel={<p>Hello</p>}/>  
             </Tabs2>

@@ -15,7 +15,7 @@ import {
 import * as moment from 'moment';
 
 export interface ITasksTabProps {
-  studyId: string | undefined;
+  studyId: string;
 }
 
 export interface ITasksTabState {
@@ -85,13 +85,13 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
                 // varied rendering logic
                 switch (header) {
                   case 'scheduledTime':
-                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:MM A');
+                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:mm A');
                     break;
                   case 'createdAt':
-                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:MM A');
+                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:mm A');
                     break;
                   case 'updatedAt':
-                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:MM A');
+                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:mm A');
                     break;
                   case 'completed':
                     cellContents = (task[header] ? 'Completed' : 'Pending');
