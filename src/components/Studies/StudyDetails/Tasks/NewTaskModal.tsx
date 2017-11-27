@@ -5,14 +5,19 @@ import {
   Tabs2,
   Tab2,
   NumericInput,
+  Popover,
+  Checkbox,
 } from '@blueprintjs/core';
+import {
+  DatePicker,
+} from '@blueprintjs/datetime';
 import {
   ITaskAPI,
   ITask,
   // convertTask,
 } from './../../../../sharedTypes';
 import axios from 'axios';
-// import * as moment from 'moment';
+import * as moment from 'moment';
 import * as _ from 'lodash';
 
 export interface INewTaskModalProps {
@@ -26,7 +31,12 @@ export interface INewTaskModalState {
   reminders: ITask[];
   studyId: string;
   uploading: boolean;
-  schedule: any;
+  schedule: {
+    scheduleType: string; // days, weeks, months, years, none
+    everyN: number;
+    endRepeatDate: Date;
+    repeatDays: string[];
+  };
 }
 
 class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalState> {
@@ -42,7 +52,12 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
       studyId: this.props.studyId,
       uploading: false,
       reminders: [],
-      schedule: {},
+      schedule: {
+        scheduleType: 'none',
+        endRepeatDate: new Date(),
+        repeatDays: [],
+        everyN: 1,
+      },
     };
   }
 
@@ -75,9 +90,45 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     });
   }
 
-  // private renderReminders = (reminders: ITask[]) => {
-// 
-  // }
+  private handleChangeSchedule = (e: any) => {
+    const schedule = this.state.schedule;
+    schedule[e.target.name] = e.target.value;
+    this.setState({
+      schedule,
+    });
+    console.log(this.state.schedule);
+  }
+
+  private handleChangeN = (e: any) => {
+    const schedule = this.state.schedule;
+    schedule.everyN = e;
+    this.setState({
+      schedule,
+    });
+  }
+
+  private handleChangeWeek = (e: any) => {
+    const toggleDay = e.target.value;
+    const repeatDays = this.state.schedule.repeatDays;
+    if (_.includes(repeatDays, toggleDay)) {
+      _.remove(repeatDays, (n) => n === toggleDay);
+    } else {
+      repeatDays.push(toggleDay);
+    }
+    const schedule = this.state.schedule;
+    schedule.repeatDays = repeatDays;
+    this.setState({
+      schedule,
+    });
+  }
+  // output from bluprint: Tue Nov 21 2017 11:23:28 GMT-0500 (EST)
+  private handleChangeScheduleDate = (e: any) => {
+    const schedule = this.state.schedule;
+    schedule.endRepeatDate = e;
+    this.setState({
+      schedule,
+    });
+  }
 
   private handleAddReminder = (e: any) => {
     const currentReminders = this.state.reminders;
@@ -95,7 +146,6 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
   }
 
   private handleChangeReminder = (e: any, index: number) => {
-    console.log(`Changed reminder ${index}`);
     let reminders = this.state.reminders;
     reminders[index][e.target.name] = e.target.value;
     this.setState({
@@ -121,13 +171,117 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
       </div>
     );
 
-    let ScheduleSection: any = <div>Schedule Section</div>;
+    // Schedule Section
+    let ScheduleSection: any = (
+      <div>
+        <p>
+          Please indicate the frequency with which you want this surve task
+          to be executed. Every 'repeat' of this schedule will generate a 
+          new task (along with its surveys).
+        </p>
+
+        <label className="pt-label">
+          <div className="pt-select">
+            <select
+              value={this.state.schedule.scheduleType}
+              name="scheduleType"
+              onChange={this.handleChangeSchedule}            
+            >
+              <option value="none">None</option>
+              <option value="days">Every N Days</option>
+              <option value="weeks">Every N Weeks</option>
+              <option value="months">Every N Months</option>
+              <option value="years">Every N Years</option>
+            </select>
+          </div>
+        </label>
+
+        {/* Only render schedule details if schedule is specified */}
+        {(this.state.schedule.scheduleType !== 'none') ? (
+          <div>
+            <label className="pt-label">
+              Every
+              <NumericInput
+                name="everyN"
+                min={0}
+                value={this.state.schedule.everyN}
+                onValueChange={this.handleChangeN}
+              />
+              {this.state.schedule.scheduleType}
+            </label>
+
+            <label className="pt-label">
+              Repeat End Date
+            </label>          
+            <Popover>
+              <Button
+                className="pt-minimal"
+                text={moment(this.state.schedule.endRepeatDate).format('MMM Do, YYYY')}
+              />
+              <DatePicker
+                defaultValue={this.state.schedule.endRepeatDate}
+                onChange={this.handleChangeScheduleDate}
+              />
+            </Popover>
+          </div>
+        ) : null}
+
+        {(this.state.schedule.scheduleType === 'weeks') ? (
+          <div className="weekpicker">
+            <Checkbox
+              label="Monday"
+              // checked={}
+              value="monday"
+              onChange={this.handleChangeWeek}
+            />
+            <Checkbox
+              label="Tuesday"
+              // checked={}
+              value="tuesday"
+              onChange={this.handleChangeWeek}
+            />
+            <Checkbox
+              label="Wednesday"
+              // checked={}
+              value="wednesday"
+              onChange={this.handleChangeWeek}
+            />
+            <Checkbox
+              label="Thursday"
+              // checked={}
+              value="thursday"
+              onChange={this.handleChangeWeek}
+            />
+            <Checkbox
+              label="Friday"
+              // checked={}
+              value="friday"
+              onChange={this.handleChangeWeek}
+            />
+            <Checkbox
+              label="Saturday"
+              // checked={}
+              value="saturday"
+              onChange={this.handleChangeWeek}
+            />
+            <Checkbox
+              label="Sunday"
+              // checked={}
+              value="sunday"
+              onChange={this.handleChangeWeek}
+            />
+          </div>
+        ) : null}
+
+      </div>
+    );
 
     // Reminders section for New Study
     if (this.state.reminders.length) {
       Reminders = this.state.reminders.map((reminder: ITask, index: number) => {
         return (
           <div key={index}>
+            <h3>Reminder #{index + 1}</h3>
             <label className="pt-label">
               Reminder Medium
               <div className="pt-select">
@@ -168,18 +322,21 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
               Days Since Survey
               <NumericInput
                 placeholder="Days"
+                min={0}
               />
             </label>
             <label className="pt-label">
               Hours Since Survey
               <NumericInput
                 placeholder="Hours since survey"
+                min={0}
               />
             </label>
             <label className="pt-label">
               Minutes Since Survey
               <NumericInput
                 placeholder="Minutes since survey"
+                min={0}
               />
             </label>
             <Button

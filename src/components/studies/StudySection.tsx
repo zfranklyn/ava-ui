@@ -160,8 +160,8 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
   }
 
   private renderStudyTable = (studies: IStudy[]) => {
-    if (this.state.viewArchived) {
-      studies = studies.filter((s: IStudy) => s.archived);
+    if (!this.state.viewArchived) {
+      studies = studies.filter((s: IStudy) => !s.archived); 
     }
     return (
       <table className="pt-table pt-interactive" style={{width: '100%'}}>
