@@ -189,6 +189,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
           isOpen={this.state.newTaskModalOpen}
           onClose={this.toggleNewTaskModal}
           title="Create New Task"
+          canOutsideClickClose={false}
         >
           {NewTaskModalVar}
         </Dialog>
@@ -196,6 +197,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
           title="Edit Task"
           isOpen={this.state.existingTaskModalOpen}
           onClose={this.toggleExistingTaskModal}
+          canOutsideClickClose={false}
         >
           {ExistingTaskModalVar}
         </Dialog>
