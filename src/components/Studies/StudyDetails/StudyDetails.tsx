@@ -10,6 +10,8 @@ import {
 import './StudyDetails.css';
 import TasksTab from './Tasks/TasksTab';
 import ParticipantsTab from './Participants/ParticipantsTab';
+import SettingsTab from './Settings/SettingsTab';
+import OverviewTab from './Overview/OverviewTab';
 import {
   IStudy,
   IStudyAPI,
@@ -103,7 +105,14 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
           </div>
           <div className="tab-section">
             <Tabs2 id="study_tabs" onChange={this.handleTabChange} renderActiveTabPanelOnly={true}>
-              <Tab2 title="Overview" id="OVERVIEW" panel={<p>Hello</p>}/>
+              <Tab2
+                title="Overview"
+                id="OVERVIEW"
+                panel={
+                  <OverviewTab
+                    studyId={this.state.study.id}
+                  />}
+              />
               <Tab2 
                 title="Tasks"
                 id="TASKS"
@@ -122,7 +131,15 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
                 }
               /> 
               <Tab2 title="Messages" id="MESSAGES" panel={<p>Hello</p>}/>  
-              <Tab2 title="Settings" id="SETTINGS" panel={<p>Hello</p>}/>  
+              <Tab2
+                title="Settings"
+                id="SETTINGS"
+                panel={
+                  <SettingsTab
+                    studyId={this.state.study.id}
+                  />
+                }
+              />
             </Tabs2>
           </div>
         </div>

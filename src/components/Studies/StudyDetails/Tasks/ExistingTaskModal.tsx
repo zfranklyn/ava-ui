@@ -3,12 +3,13 @@ import {
   Button,
   Spinner,
   // Intent,
-  // Popover,
+  Popover,
   // PopoverInteractionKind,
   // Position,
 } from '@blueprintjs/core';
 import {
-  // DateTimePicker,
+  DateTimePicker,
+  TimePickerPrecision,
 } from '@blueprintjs/datetime';
 import {
   ITaskAPI,
@@ -64,6 +65,17 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
     const task = this.state.task;
     if (task) {
       task[e.target.name] = e.target.value;
+      this.setState({
+        task,
+        modified: true,
+      });
+    }
+  }
+
+  private handleChangeTaskTime = (newDate: Date) => {
+    const task = this.state.task;
+    if (task) {
+      task.scheduledTime = newDate;
       this.setState({
         task,
         modified: true,
@@ -175,15 +187,25 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
                   />
                 </label>
 
-                <label className="pt-label">
-                  Scheduled Time
-                  <input
-                    name="scheduledTime"
-                    className="pt-input pt-fill"
-                    onChange={this.handleChange}
-                    defaultValue={moment(this.state.task.scheduledTime).format('YYYY-MM-DD HH:MM:ss.SSS Z')}
+                <Popover>
+                  <Button className="pt-minimal">
+                    Scheduled Time: {moment(this.state.task.scheduledTime).format('YYYY-MM-DD HH:MM:ss')}
+                  </Button>
+                  <DateTimePicker
+                    onChange={this.handleChangeTaskTime}
+                    datePickerProps={
+                      {
+                        minDate: new Date(),
+                        maxDate: new Date(moment().add(5, 'years').format()),
+                      }
+                    }
+                    timePickerProps={
+                      {
+                        precision: TimePickerPrecision.SECOND,
+                      }
+                    }
                   />
-                </label>
+                </Popover>
               </div>
             <div className="pt-dialog-footer">
               <Button text="Cancel" onClick={() => this.props.toggleExistingTaskModal()}/>
