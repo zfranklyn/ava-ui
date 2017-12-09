@@ -46,6 +46,22 @@ export interface INewTaskModalState {
   };
 }
 
+interface INewTask {
+  type: string;
+  message: string;
+  description: string;
+  mediumType: string;
+  reminders: {
+    type: string,
+    message: string,
+    description: string,
+    mediumType: string,
+    days: number;
+    hours: number;
+    minutes: number;
+  }[];
+}
+
 class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalState> {
 
   constructor(props: INewTaskModalProps) {
@@ -68,7 +84,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     };
   }
 
-  private submitTask = (e: any) => {
+  private handleSubmitTask = async (e: any) => {
     e.preventDefault();
 
     this.setState({
@@ -78,26 +94,70 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     let { scheduledTime }  = this.state.task;
     const {
       scheduleType,
-      // everyN,
-      // endRepeatDate,
-      // repeatDays
+      everyN,
+      endRepeatDate,
+      repeatDays,
     } = this.state.schedule;
 
-    if (scheduleType !== 'none') {
-      // Post multiple tasks (and their reminders) based off schedule
-      // let currentTime = scheduledTime;
-      console.log('Schedule');
-    } else {
-      this.postTask(scheduledTime);
+    if (scheduleType === 'days' || scheduleType === 'months' || scheduleType === 'years') {
+
+      let currentTime = scheduledTime;
+
+      while (moment(currentTime).isBefore(endRepeatDate)) {
+        const { type, message, description, mediumType, } = this.state.task;
+        const { reminders } = this.state;
+        let newTaskParams: INewTask = {
+          type,
+          message,
+          description,
+          mediumType,
+          reminders,
+        };
+
+        await this.postTask(newTaskParams, currentTime);
+        
+        currentTime = moment(currentTime).add(everyN, scheduleType);
+      }
+
+    } else if (scheduleType === 'weeks') {
+      /*
+      Weeks need to be handled differently:
+      You must recreate the task for each day of the week specified
+      */
+
+      let currentTime = scheduledTime;
+
+      while (moment(currentTime).isBefore(endRepeatDate)) {
+        const { type, message, description, mediumType, } = this.state.task;
+        const { reminders } = this.state;
+        let newTaskParams: INewTask = {
+          type,
+          message,
+          description,
+          mediumType,
+          reminders,
+        };
+
+        for (let n = 0; n < repeatDays.length; n++) {
+          let dayString = repeatDays[n];
+          let dayOfTheWeek = new Date(moment(currentTime).day(dayString).format());
+          await this.postTask(newTaskParams, dayOfTheWeek);
+        }
+
+        currentTime = moment(currentTime).add(everyN, 'weeks');
+      }
     }
+
+    this.props.toggleNewTaskModal();
+    this.props.updateTasksData();
 
   }
 
-  private postTask = (scheduledTime: Date) => {
+  private postTask = (params: INewTask, scheduledTime: Date) => {
 
-    const { type, message, description, mediumType, } = this.state.task;
+    const { type, message, description, mediumType, } = params;
 
-    axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
+    return axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
       scheduledTime,
       type,
       message,
@@ -108,9 +168,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     .then((createdTask: any) => {
         // Create any reminders, if specified
         return Promise.all([
-          this.state.reminders.map((reminder: any) => {
+          params.reminders.map((reminder: any) => {
             console.log(`Creating Reminder`);
-            const reminderTime = moment()
+            const reminderTime = moment(scheduledTime)
               .add(reminder.days, 'days')
               .add(reminder.hours, 'hours')
               .add(reminder.minutes, 'minutes')
@@ -124,16 +184,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
               mediumType: reminder.mediumType,
               ParentSurveyTaskId: createdTask.id,
             })
-            .then(() => {
-              this.props.updateTasksData();
-            })
             .catch(console.log);
           })
         ]);
-    })
-    .then(() => {
-      this.props.toggleNewTaskModal();
-      this.props.updateTasksData();      
     })
     .catch(console.log);    
   }
@@ -186,13 +239,13 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     });
   }
 
-  // Change survey Schedule (recurrence)
   private handleChangeScheduleEndDate = (newDate: Date) => {
     const schedule = this.state.schedule;
     schedule.endRepeatDate = newDate;
     this.setState({
       schedule,
     });
+    console.log(schedule);
   }
 
   private handleAddReminder = (e: any) => {
@@ -240,7 +293,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
 
     if (this.state.task !== null) {
       return (
-        <form onSubmit={this.submitTask}>
+        <form onSubmit={this.handleSubmitTask}>
           <div className="pt-dialog-body">
           <Tabs2 id="new_task_tabs">
             <Tab2
