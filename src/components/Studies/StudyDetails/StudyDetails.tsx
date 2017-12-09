@@ -10,6 +10,7 @@ import {
 import './StudyDetails.css';
 import TasksTab from './Tasks/TasksTab';
 import ParticipantsTab from './Participants/ParticipantsTab';
+import SettingsTab from './Settings/SettingsTab';
 import {
   IStudy,
   IStudyAPI,
@@ -122,7 +123,15 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
                 }
               /> 
               <Tab2 title="Messages" id="MESSAGES" panel={<p>Hello</p>}/>  
-              <Tab2 title="Settings" id="SETTINGS" panel={<p>Hello</p>}/>  
+              <Tab2
+                title="Settings"
+                id="SETTINGS"
+                panel={
+                  <SettingsTab
+                    studyId={this.state.study.id}
+                  />
+                }
+              />
             </Tabs2>
           </div>
         </div>
