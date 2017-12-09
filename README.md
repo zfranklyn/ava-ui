@@ -4,6 +4,9 @@ Ava is a web app built for the Yale Center for Emotional Intelligence. It is a r
 
 Researchers can create *studies*, recruit participants into *studies*, and send messages to and track participants over time.
 
+### Current Progress
+![Current Progress](./progress.png)
+
 ## Tentative Timeline
 * October 1: Product specifications complete
 * October 15: UI Mockups and Database Schemas Complete
