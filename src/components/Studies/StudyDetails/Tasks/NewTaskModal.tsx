@@ -365,7 +365,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
                     }
                     timePickerProps={
                       {
-                        precision: TimePickerPrecision.MINUTE,
+                        precision: TimePickerPrecision.SECOND,
                       }
                     }
                   />

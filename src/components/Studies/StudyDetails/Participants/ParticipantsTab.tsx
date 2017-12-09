@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  // Button,
+  Button,
   // Spinner,
   // Dialog,
 } from '@blueprintjs/core';
@@ -24,7 +24,10 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
 
   public render() {
     return (
-      <div>Participants Tab</div>
+      <div>
+        <Button>Add Participant</Button>
+        <Button>Recruit Participant</Button>
+      </div>
     );
   }
 }
