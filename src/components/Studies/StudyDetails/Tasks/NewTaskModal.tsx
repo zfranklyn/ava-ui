@@ -187,9 +187,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
   }
 
   // Change survey Schedule (recurrence)
-  private handleChangeScheduleEndDate = (e: any) => {
+  private handleChangeScheduleEndDate = (newDate: Date) => {
     const schedule = this.state.schedule;
-    schedule.endRepeatDate = e;
+    schedule.endRepeatDate = newDate;
     this.setState({
       schedule,
     });

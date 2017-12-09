@@ -81,7 +81,7 @@ class ScheduleSection extends React.Component<IScheduleSectionProps, IScheduleSe
               />
               <DatePicker
                 defaultValue={this.props.schedule.endRepeatDate}
-                // onChange={this.props.handleChangeScheduleEndDate}
+                onChange={(newDate) => this.props.handleChangeScheduleEndDate(newDate)}
                 minDate={new Date()}
                 maxDate={new Date(moment().add(5, 'years').format())}
               />
