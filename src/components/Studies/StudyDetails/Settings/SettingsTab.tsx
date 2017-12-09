@@ -111,7 +111,7 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
     const keys = Object.keys(metadata);
     return (
       keys.map((k: string, index: number) => (
-        <Tag key={index} onRemove={() => this.handleRemoveTag(k)}>
+        <Tag style={{margin: '2px'}}key={index} onRemove={() => this.handleRemoveTag(k)}>
           {k}:{metadata[k]}
         </Tag>
       ))
@@ -194,9 +194,11 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
           />
           <Button iconName="add" onClick={this.handleAddKeyValue}/>
         </div>
+     
         <div className="tags-section" style={STYLES.tagSection}>
           {Tags}
-        </div>        
+        </div>     
+
         <Button
           disabled={!this.state.modified}
           type="submit"
