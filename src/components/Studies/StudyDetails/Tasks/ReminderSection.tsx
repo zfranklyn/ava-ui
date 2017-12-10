@@ -1,11 +1,15 @@
 import * as React from 'react';
 import {
   Button,
-  NumericInput,
-} from '@blueprintjs/core';
+  Card,
+  Input,
+  InputNumber,
+  Select,
+} from 'antd';
 import {
 } from './../../../../sharedTypes';
-
+const { TextArea } = Input;
+const Option = Select.Option;
 export interface IReminderSectionProps {
   reminders: {
     type: string,
@@ -38,27 +42,24 @@ class ReminderSection extends React.Component<IReminderSectionProps, IReminderSe
         <div>
           {this.props.reminders.map((reminder: any, index: number) => {
             return (
-              <div key={index}>
-                <h3>Reminder #{index + 1}</h3>
+              <Card key={index} title={`Reminder #${index + 1}`}>
                 <label className="pt-label">
                   Reminder Medium
                   <div className="pt-select">
-                    <select
+                    <Select
                       value={this.props.reminders[index].mediumType}
-                      name="mediumType"
-                      onChange={(e) => this.props.handleChangeReminder(e, index)}
+                      onChange={(e) => this.props.handleChangeReminder(e, index, 'mediumType')}
                     >
-                      <option value="SMS">SMS</option>
-                      <option value="EMAIL">Email</option>
-                    </select>
+                      <Option value="SMS">SMS</Option>
+                      <Option value="EMAIL">Email</Option>
+                    </Select>
                   </div>
                 </label>
 
                 <label className="pt-label">
                   Description
-                  <input
+                  <TextArea
                     name="description"
-                    className="pt-input pt-fill"
                     onChange={(e) => this.props.handleChangeReminder(e, index)}
                     value={this.props.reminders[index].description}
                   />
@@ -66,9 +67,8 @@ class ReminderSection extends React.Component<IReminderSectionProps, IReminderSe
 
                 <label className="pt-label">
                   Message
-                  <input
+                  <TextArea
                     name="message"
-                    className="pt-input pt-fill"
                     onChange={(e) => this.props.handleChangeReminder(e, index)}
                     value={this.props.reminders[index].message}
                   />
@@ -78,40 +78,44 @@ class ReminderSection extends React.Component<IReminderSectionProps, IReminderSe
                 <h5>Reminder Send Time (since Survey distribution)</h5>
                 <label className="pt-label">
                   Days Since Survey
-                  <NumericInput
+                  <InputNumber
                     placeholder="Days"
                     min={0}
+                    max={365}
                     name="days"
                     value={this.props.reminders[index].days}
-                    onValueChange={(e) => this.props.handleChangeReminderTime(e, index, 'days')}
+                    onChange={(e) => this.props.handleChangeReminderTime(e, index, 'days')}
                   />
                 </label>
                 <label className="pt-label">
                   Hours Since Survey
-                  <NumericInput
+                  <InputNumber
                     placeholder="Hours since survey"
                     min={0}
+                    max={24}
                     name="hours"
                     value={this.props.reminders[index].hours}
-                    onValueChange={(e) => this.props.handleChangeReminderTime(e, index, 'hours')}
+                    onChange={(e) => this.props.handleChangeReminderTime(e, index, 'hours')}
                   />
                 </label>
                 <label className="pt-label">
                   Minutes Since Survey
-                  <NumericInput
+                  <InputNumber
                     placeholder="Minutes since survey"
                     min={0}
+                    max={60}
                     name="minutes"
                     value={this.props.reminders[index].minutes}
-                    onValueChange={(e) => this.props.handleChangeReminderTime(e, index, 'minutes')}
+                    onChange={(e) => this.props.handleChangeReminderTime(e, index, 'minutes')}
                   />
                 </label>
                 <Button
                   onClick={() => this.props.handleRemoveReminder(index)}
-                  className="pt-intent-danger"
-                  text="Delete Reminder"
-                />
-              </div>
+                  type="danger"
+                >
+                  Delete Reminder
+                </Button>
+              </Card>
             );
           })}
         </div>

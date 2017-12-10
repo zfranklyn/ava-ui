@@ -2,15 +2,21 @@ import * as React from 'react';
 import {
   
 } from '@blueprintjs/core';
-import {  } from './../../../../sharedTypes';
+import 'ant-design-pro/dist/ant-design-pro.css';
+import 'antd/dist/antd.css';
+const Charts = require('ant-design-pro/lib/Charts');
+import { Timeline, Card } from 'antd';
+import { ITaskAPI } from './../../../../sharedTypes';
 // import axios from 'axios';
-import * as moment from 'moment';
+// import * as moment from 'moment';
 
 export interface IOverviewTabProps {
   studyId: string;
 }
 
 export interface IOverviewTabState {
+  currentResponseRate: number;
+  averageResponseRate: number;
 }
 
 class OverviewTab extends React.Component<IOverviewTabProps, IOverviewTabState> {
@@ -18,64 +24,58 @@ class OverviewTab extends React.Component<IOverviewTabProps, IOverviewTabState> 
   constructor(props: IOverviewTabProps) {
     super(props);
     this.state = {
+      currentResponseRate: 68,
+      averageResponseRate: 75
     };
+  }
+
+  private renderTimeline = (recentTasks: ITaskAPI[]) => {
+    if (recentTasks.length) {
+      return (
+        <Timeline>
+          {recentTasks.map((task: ITaskAPI, index: number) => {
+            return (
+              <Timeline.Item key={index} color="green">{task.description}</Timeline.Item>
+            );
+          })}
+        </Timeline>
+      );
+
+    } else {
+
+      return (
+        <Timeline>
+          <Timeline.Item color="green">SMS: Survey to Corbett Prep</Timeline.Item>
+          <Timeline.Item color="green">SMS: Reminder to Corbett Prep</Timeline.Item>
+          <Timeline.Item color="gray">SMS: Reminder to Corbett Prep</Timeline.Item>
+          <Timeline.Item color="gray">SMS: Reminder to Corbett Prep</Timeline.Item>
+          <Timeline.Item color="gray">SMS: Reminder to Corbett Prep</Timeline.Item>
+        </Timeline>
+      );
+
+      // return (
+      //   <div>No Recent Tasks</div>
+      // );
+    }
   }
 
   public render() {
     return (
       <div style={STYLES.CONTAINER_STYLE}>
-        <div style={STYLES.STATS_CONTAINER_STYLE}>
-          <div className="pt-card pt-interactive" style={STYLES.CARD_STYLE}>
-            <h5>
-              Total Participants
-            </h5>
-            <span style={STYLES.STAT_STYLE}>
-              238
-            </span>
-          </div>
-          <div className="pt-card pt-interactive" style={STYLES.CARD_STYLE}>
-            <h5>
-              Average Response Rate
-            </h5>
-            <span style={STYLES.STAT_STYLE}>
-              65.80%
-            </span>
-          </div>
+        <Charts.ChartCard
+          title="Survey Response Rates"
+          total={`${this.state.currentResponseRate}%`}
+        >
+        <Charts.MiniProgress
+          percent={this.state.currentResponseRate}
+          strokeWidth={8}
+          target={this.state.averageResponseRate}
+        />
+        </Charts.ChartCard>
 
-          <div className="pt-card pt-interactive" style={STYLES.CARD_STYLE}>
-            <h5>
-              Recent Tasks
-            </h5>
-            <table className="pt-table pt-condensed pt-interactive">
-              <thead>
-                <tr>
-                  <th>Type</th>
-                  <th>Description</th>
-                  <th>Countdown</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Survey</td>
-                  <td>Survey for Corbett Prep</td>
-                  <td>{moment(moment().add(1, 'minutes')).fromNow()}</td>
-                </tr>
-                <tr>
-                  <td>Reminder</td>
-                  <td>Reminder 1 for Corbett Prep</td>
-                  <td>{moment(moment().add(2.5, 'hours')).fromNow()}</td>
-                </tr>
-                <tr>
-                  <td>Reminder</td>
-                  <td>Reminder 2 for Corbett Prep</td>
-                  <td>{moment(moment().add(4.5, 'hours')).fromNow()}</td>
-                </tr>
-              </tbody>
-
-            </table>
-          </div>
-
-        </div>
+        <Card title="Recent Tasks">
+          {this.renderTimeline([])}
+        </Card>
 
       </div>
     );

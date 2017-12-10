@@ -1,9 +1,11 @@
 import * as React from 'react';
 import {
-  Button,
-  Spinner,
-  Dialog,
 } from '@blueprintjs/core';
+import {
+  Modal,
+  Button,
+  Spin,
+} from 'antd';
 import './TasksTab.css';
 import ExistingTaskModal from './ExistingTaskModal';
 import NewTaskModal from './NewTaskModal';
@@ -151,7 +153,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
   public render() {
 
-    let TaskTable = (this.state.loadingTasks ? <Spinner/> : <div>No Tasks</div>);
+    let TaskTable = (this.state.loadingTasks ? <Spin/> : <div>No Tasks</div>);
     let ExistingTaskModalVar = <div>No Task Specified</div>;
 
     if (this.state.tasks.length) {
@@ -182,25 +184,29 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
     return (
       <div className="tasks-tab">
-        <Button text="Create Tasks" onClick={() => this.toggleNewTaskModal()}/>
+        <Button onClick={() => this.toggleNewTaskModal()}>Create New Task</Button>
         {TaskTable}
         
-        <Dialog
-          isOpen={this.state.newTaskModalOpen}
-          onClose={this.toggleNewTaskModal}
+        <Modal
+          visible={this.state.newTaskModalOpen}
+          onCancel={this.toggleNewTaskModal}
           title="Create New Task"
-          canOutsideClickClose={false}
+          maskClosable={false}
+          footer={null}
+          width="80%"
         >
           {NewTaskModalVar}
-        </Dialog>
-        <Dialog
+        </Modal>
+        <Modal
           title="Edit Task"
-          isOpen={this.state.existingTaskModalOpen}
-          onClose={this.toggleExistingTaskModal}
-          canOutsideClickClose={false}
+          visible={this.state.existingTaskModalOpen}
+          onCancel={this.toggleExistingTaskModal}
+          maskClosable={false}
+          footer={null}
+          width="80%"
         >
           {ExistingTaskModalVar}
-        </Dialog>
+        </Modal>
 
       </div>
     );

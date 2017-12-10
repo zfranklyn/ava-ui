@@ -1,9 +1,5 @@
 import * as React from 'react';
-import {
-  Spinner,
-  Tabs2,
-  Tab2,
-} from '@blueprintjs/core';
+import { Tabs, Spin } from 'antd';
 import {
   // Link
 } from 'react-router-dom';
@@ -92,7 +88,7 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
 
   public render() {
 
-    let StudyDetailsComponent = <Spinner/>;
+    let StudyDetailsComponent = <Spin/>;
 
     if (this.state.study && this.state.study.id) {
       StudyDetailsComponent = (
@@ -104,43 +100,45 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
             </p>
           </div>
           <div className="tab-section">
-            <Tabs2 id="study_tabs" onChange={this.handleTabChange} renderActiveTabPanelOnly={true}>
-              <Tab2
-                title="Overview"
-                id="OVERVIEW"
-                panel={
-                  <OverviewTab
-                    studyId={this.state.study.id}
-                  />}
-              />
-              <Tab2 
-                title="Tasks"
-                id="TASKS"
-                panel={
-                  <TasksTab
-                    studyId={this.state.study.id}
-                  />}
-              /> 
-              <Tab2
-                title="Participants"
-                id="PARTICIPANTS"
-                panel={
-                <ParticipantsTab
+            <Tabs onChange={this.handleTabChange} animated={false}>
+              <Tabs.TabPane
+                tab="Overview"
+                key="1"
+                forceRender={true}
+              >
+                <OverviewTab studyId={this.state.study.id}/>
+              </Tabs.TabPane>
+              <Tabs.TabPane
+                tab="Tasks"
+                key="2"
+                forceRender={true}
+              >
+                <TasksTab studyId={this.state.study.id}/>
+              </Tabs.TabPane>
+              <Tabs.TabPane
+                tab="Participants"
+                key="3"
+                forceRender={true}
+              >
+                <ParticipantsTab studyId={this.state.study.id}/>
+              </Tabs.TabPane>
+              <Tabs.TabPane
+                tab="Messages"
+                key="4"
+                forceRender={true}
+              >
+                Hello
+              </Tabs.TabPane>
+              <Tabs.TabPane
+                tab="Settings"
+                key="5"
+                forceRender={true}
+              >
+                <SettingsTab
                   studyId={this.state.study.id}
                 />
-                }
-              /> 
-              <Tab2 title="Messages" id="MESSAGES" panel={<p>Hello</p>}/>  
-              <Tab2
-                title="Settings"
-                id="SETTINGS"
-                panel={
-                  <SettingsTab
-                    studyId={this.state.study.id}
-                  />
-                }
-              />
-            </Tabs2>
+              </Tabs.TabPane>
+            </Tabs>
           </div>
         </div>
       );

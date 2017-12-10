@@ -1,15 +1,17 @@
 import * as React from 'react';
-import {
+import { 
+  Tabs,
+  Select,
+  Input,
+  DatePicker,
   Button,
-  Spinner,
-  Tabs2,
-  Tab2,
-  Popover,
-} from '@blueprintjs/core';
-import {
-  DateTimePicker,
-  TimePickerPrecision,
-} from '@blueprintjs/datetime';
+  Divider,
+  Icon,
+  Spin,
+} from 'antd';
+const Option = Select.Option;
+const Tab = Tabs.TabPane;
+const { TextArea } = Input;
 import {
   // convertTask,
 } from './../../../../sharedTypes';
@@ -146,6 +148,10 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
 
         currentTime = moment(currentTime).add(everyN, 'weeks');
       }
+    } else {
+      const { type, message, description, mediumType, } = this.state.task;
+      const { reminders } = this.state;
+      await this.postTask({type, message, description, mediumType, reminders}, scheduledTime);
     }
 
     this.props.toggleNewTaskModal();
@@ -153,9 +159,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
 
   }
 
-  private postTask = (params: INewTask, scheduledTime: Date) => {
+  private postTask = (params: any, scheduledTime: Date) => {
 
-    const { type, message, description, mediumType, } = params;
+    const { type, message, description, mediumType, reminders, } = params;
 
     return axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
       scheduledTime,
@@ -167,50 +173,65 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     .then((res: any) => res.data)
     .then((createdTask: any) => {
         // Create any reminders, if specified
-        return Promise.all([
-          params.reminders.map((reminder: any) => {
-            console.log(`Creating Reminder`);
-            const reminderTime = moment(scheduledTime)
-              .add(reminder.days, 'days')
-              .add(reminder.hours, 'hours')
-              .add(reminder.minutes, 'minutes')
-              .format();
-
-            return axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
-              scheduledTime: reminderTime,
-              type: 'REMINDER',
-              message: reminder.message,
-              description: reminder.description,
-              mediumType: reminder.mediumType,
-              ParentSurveyTaskId: createdTask.id,
+        if (reminders.length) {
+          console.log('doing reminders:', reminders);
+          return Promise.all([
+            reminders.map((reminder: any) => {
+              console.log(`Creating Reminder`);
+              const reminderTime = moment(scheduledTime)
+                .add(reminder.days, 'days')
+                .add(reminder.hours, 'hours')
+                .add(reminder.minutes, 'minutes')
+                .format();
+  
+              return axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
+                scheduledTime: reminderTime,
+                type: 'REMINDER',
+                message: reminder.message,
+                description: reminder.description,
+                mediumType: reminder.mediumType,
+                ParentSurveyTaskId: createdTask.id,
+              })
+              .catch(console.log);
             })
-            .catch(console.log);
-          })
-        ]);
+          ]);
+        } else {
+          return createdTask;
+        }
     })
     .catch(console.log);    
   }
 
-  private handleChangeTaskDetails = (e: any) => {
+  private handleChangeTaskDetails = (val: any, inputName?: string) => {
     const task = this.state.task;
-    task[e.target.name] = e.target.value;
+    if (inputName) {
+      task[inputName] = val;
+      this.setState({
+        task,
+        uploading: true,
+      });
+    } else {
+      task[val.target.name] = val.target.value;
+      this.setState({
+        task,
+        uploading: true,
+      });      
+    }
+
+    console.log(this.state);
+  }
+
+  private handleChangeTaskTime = (time: any) => {
+    const task = this.state.task;
+    task.scheduledTime = time;
     this.setState({
       task,
-      uploading: true,
     });
   }
 
-  private handleChangeTaskTime = (e: any) => {
-    const task = this.state.task;
-    task.scheduledTime = e;
-    this.setState({
-      task,
-    });
-  }
-
-  private handleChangeSchedule = (e: any) => {
+  private handleChangeSchedule = (e: any, name: string) => {
     const schedule = this.state.schedule;
-    schedule[e.target.name] = e.target.value;
+    schedule[name] = e;
     this.setState({
       schedule,
     });
@@ -264,12 +285,22 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     });
   }
 
-  private handleChangeReminder = (e: any, index: number) => {
+  private handleChangeReminder = (e: any, index: number, mediumType: string) => {
     let reminders = this.state.reminders;
-    reminders[index][e.target.name] = e.target.value;
-    this.setState({
-      reminders,
-    });
+    if (mediumType) {
+      reminders[index][mediumType] = e;
+      this.setState({
+        reminders,
+      });
+    } else {
+      reminders[index][e.target.name] = e.target.value;
+      this.setState({
+        reminders,
+      });
+    }
+
+    console.log(this.state);
+
   }
 
   private handleChangeReminderTime = (e: any, index: number, type: string) => {
@@ -294,45 +325,41 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     if (this.state.task !== null) {
       return (
         <form onSubmit={this.handleSubmitTask}>
-          <div className="pt-dialog-body">
-          <Tabs2 id="new_task_tabs">
-            <Tab2
-              id="new_task_study"
-              title="Study Information"
-              panel={
+          <Tabs type="card">
+            <Tab
+              key="1"
+              tab="Study Information"
+            >
               <div>
                 <label className="pt-label">
                   Task Type
                   <div className="pt-select">
-                    <select
+                    <Select
                       defaultValue={this.state.task.type}
-                      name="type"
-                      onChange={this.handleChangeTaskDetails}
+                      onChange={(val) => this.handleChangeTaskDetails(val, 'type')}
                     >
-                      <option value="SURVEY">Survey</option>
-                      <option value="CUSTOM_MESSAGE">Custom Message</option>
-                    </select>
+                      <Option value="SURVEY">Survey</Option>
+                      <Option value="CUSTOM_MESSAGE">Custom Message</Option>
+                    </Select>
                   </div>
                 </label>            
                 <label className="pt-label">
                   Message Medium
                   <div className="pt-select">
-                    <select
+                    <Select
                       defaultValue={this.state.task.mediumType}
-                      name="mediumType"
-                      onChange={this.handleChangeTaskDetails}
+                      onChange={(val) => this.handleChangeTaskDetails(val, 'mediumType')}
                     >
-                      <option value="SMS">SMS</option>
-                      <option value="EMAIL">Email</option>
-                    </select>
+                      <Option value="SMS">SMS</Option>
+                      <Option value="EMAIL">Email</Option>
+                    </Select>
                   </div>
                 </label>
 
                 <label className="pt-label">
                   Description
-                  <textarea
+                  <TextArea
                     name="description"
-                    className="pt-input pt-fill"
                     onChange={this.handleChangeTaskDetails}
                     defaultValue={this.state.task.description}
                   />
@@ -340,9 +367,8 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
 
                 <label className="pt-label">
                   Message
-                  <textarea
+                  <TextArea
                     name="message"
-                    className="pt-input pt-fill"
                     onChange={this.handleChangeTaskDetails}
                     defaultValue={this.state.task.message}
                   />
@@ -351,81 +377,72 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
                   </span>
                 </label>
 
-                <Popover>
-                  <Button
-                    text={`Scheduled Time: ${moment(this.state.task.scheduledTime).format('MMM Do, YYYY HH:mm:ss')}`}
-                  />
-                  <DateTimePicker
+                  <DatePicker
+                    showTime={true}
+                    format="MM-DD-YYYY HH:mm:ss"
+                    placeholder="Select Trigger Time"
                     onChange={this.handleChangeTaskTime}
-                    datePickerProps={
-                      {
-                        minDate: new Date(),
-                        maxDate: new Date(moment().add(5, 'years').format()),
-                      }
-                    }
-                    timePickerProps={
-                      {
-                        precision: TimePickerPrecision.SECOND,
-                      }
-                    }
+                    onOk={this.handleChangeTaskTime}
+                    defaultValue={moment()}
                   />
-                </Popover>
-              </div>}
-            />
-            <Tab2
-              id="new_task_reminders"
-              title="Reminders"
+              </div>
+            </Tab>
+            <Tab
+              tab="Reminders"
+              key="2"
               disabled={!(this.state.task && this.state.task.type === 'SURVEY')}
-              panel={
-                <div>
-                  <ReminderSection
-                    reminders={this.state.reminders}
-                    handleChangeReminder={this.handleChangeReminder}
-                    handleChangeReminderTime={this.handleChangeReminderTime}
-                    handleRemoveReminder={this.handleRemoveReminder}
-                  /> 
-                  <Button
-                    className="pt-fill pt-intent-success"
-                    text="Add Reminder"
-                    onClick={this.handleAddReminder}
-                  />
-                </div>
+            >
+              <div>
+                <ReminderSection
+                  reminders={this.state.reminders}
+                  handleChangeReminder={this.handleChangeReminder}
+                  handleChangeReminderTime={this.handleChangeReminderTime}
+                  handleRemoveReminder={this.handleRemoveReminder}
+                /> 
+                <Button
+                  type="dashed"
+                  onClick={this.handleAddReminder}
+                  style={{width: '100%'}}
+                >
+                  <Icon type="plus"/>
+                  Add a Reminder
+                </Button>
+              </div>
                 
-              }
-            />
-            <Tab2
-              id="new_task_schedule"
-              title="Schedule"
-              panel={
-                <div>
-                  <ScheduleSection
-                    schedule={this.state.schedule}
-                    handleChangeSchedule={this.handleChangeSchedule}
-                    handleChangeN={this.handleChangeN}
-                    handleChangeScheduleEndDate={this.handleChangeScheduleEndDate}
-                    handleChangeWeek={this.handleChangeWeek}
-                  />
-                </div>
-              }
-              
-            />
-          </Tabs2>
-          </div>
-          <div className="pt-dialog-footer">
-            <Button text="Cancel" onClick={(e: any) => this.props.toggleNewTaskModal(e)}/>
+            </Tab>
+            <Tab
+              key="3"
+              tab="Schedule"
+            >
+              <div>
+                <ScheduleSection
+                  schedule={this.state.schedule}
+                  handleChangeSchedule={this.handleChangeSchedule}
+                  handleChangeN={this.handleChangeN}
+                  handleChangeScheduleEndDate={this.handleChangeScheduleEndDate}
+                  handleChangeWeek={this.handleChangeWeek}
+                />
+              </div>
+            </Tab>
+
+          </Tabs>
+
+          <Divider/>
+
+            <Button onClick={(e: any) => this.props.toggleNewTaskModal(e)}>Cancel</Button>
             <Button
-              text={`Create New Task`}
-              className="pt-intent-primary"
               disabled={!this.state.uploading}
-              type="submit"
-            />
-          </div>
+              htmlType="submit"
+              type="primary"
+            >
+              Create Task
+            </Button>
         </form>
       );
     } else {
       return (
         <div>
-          <Spinner/>
+          <Spin/>
         </div>
       );
     }
