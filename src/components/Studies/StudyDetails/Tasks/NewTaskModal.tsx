@@ -260,7 +260,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     });
   }
 
-  private handleChangeScheduleEndDate = (newDate: Date) => {
+  private handleChangeScheduleEndDate = (newDate: any) => {
     const schedule = this.state.schedule;
     schedule.endRepeatDate = newDate;
     this.setState({
