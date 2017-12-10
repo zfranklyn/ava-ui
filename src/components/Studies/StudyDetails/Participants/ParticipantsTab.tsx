@@ -25,8 +25,15 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
   public render() {
     return (
       <div>
+
         <Button>Add Participant</Button>
         <Button>Recruit Participant</Button>
+        <div className="pt-card">
+          <h5>How to Recruit Users</h5>
+          <p>
+            Text "REGISTER {this.props.studyId}"
+          </p>
+        </div>
       </div>
     );
   }
