@@ -1,12 +1,20 @@
 import * as React from 'react';
 import {
-  Spinner,
-  AnchorButton,
-  Dialog,
   Switch,
-} from '@blueprintjs/core';
+  Modal,
+  Button,
+  Spin,
+  Input,
+  Row,
+  Card,
+  Col,
+  Layout,
+} from 'antd';
+const PageHeader = require('ant-design-pro/lib/PageHeader');
+const Charts = require('ant-design-pro/lib/Charts');
+import 'ant-design-pro/dist/ant-design-pro.css';
+const { Content } = Layout;
 import {
-  // Link
 } from 'react-router-dom';
 import NewStudyModal from './NewStudyModal/NewStudyModal';
 import './StudySection.css';
@@ -15,8 +23,8 @@ import {
   IStudyAPI,
   convertStudy,
 } from './../../sharedTypes';
-import * as moment from 'moment';
-import * as _ from 'lodash';
+// import * as moment from 'moment';
+// import * as _ from 'lodash';
 
 /*
   React Router V4 automatically pushes a history object onto the props hash of child components
@@ -54,14 +62,14 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     this.props.history.push(`/study/${studyId}`)
   )
 
-  private headersToShow = [
-    {headerToRender: 'Study Name', headerInDB: 'title'},
-    {headerToRender: 'Description', headerInDB: 'description'},
-    {headerToRender: 'Status', headerInDB: 'active'},
-    {headerToRender: 'Last Modified', headerInDB: 'updatedAt'},
-    {headerToRender: 'Creation Date', headerInDB: 'createdAt'},
-    {headerToRender: 'Archived', headerInDB: 'archived'},
-  ];
+  // private headersToShow = [
+  //   {headerToRender: 'Study Name', headerInDB: 'title'},
+  //   {headerToRender: 'Description', headerInDB: 'description'},
+  //   {headerToRender: 'Status', headerInDB: 'active'},
+  //   {headerToRender: 'Last Modified', headerInDB: 'updatedAt'},
+  //   {headerToRender: 'Creation Date', headerInDB: 'createdAt'},
+  //   {headerToRender: 'Archived', headerInDB: 'archived'},
+  // ];
 
   public componentDidMount() {
     this.updateStudies();
@@ -80,97 +88,6 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     .catch(console.log);
   }
 
-  private renderTableRows = (studies: IStudy[]) => {
-    const headerNamesInDB = this.headersToShow.map(h => h.headerInDB);
-
-    const currentSortBy = this.state.sortBy;
-    const currentSortOrder = this.state.sortOrder;
-
-    // sort studies by params specified in this.state; default sort by updatedBy and title
-    studies = _.orderBy(studies, [`${currentSortBy}`, `updatedBy`, `title`], [`${currentSortOrder}`, 'desc', 'desc']);
-
-    return (
-      <tbody>
-        {studies.map((study: IStudy, key1: number) => {
-          return (
-            <tr key={key1} onClick={() => this.navigateToStudy(study.id)}>
-              {headerNamesInDB.map((header: any, key2: number) => {
-
-                let cellContents;
-                // varied rendering logic
-                switch (header) {
-                  case 'createdAt':
-                    cellContents = moment(study[header]).format('MMM D, YYYY HH:MM');
-                    break;
-                  case 'updatedAt':
-                    cellContents = moment(study[header]).format('MMM D, YYYY HH:MM');
-                    break;
-                  case 'active':
-                    cellContents = (study[header] ? 'Active' : 'Inactive');
-                    break;
-                  default:
-                    cellContents = `${study[header]}`;
-                    break;
-                }
-
-                return (
-                  <td key={key2}>
-                    {cellContents}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    );
-  }
-
-  private renderTableHeaders = (studies: IStudy[]) => {
-    const headerNamesToRender = this.headersToShow.map(h => h.headerToRender);
-    return (
-      <thead>
-        <tr>
-          {
-            headerNamesToRender.map(
-              (h: string, index: number) => {
-                
-                const id = this.headersToShow.filter((obj) => obj.headerToRender === h)[0].headerInDB;
-                let style = STYLES.header;
-                if (this.state.sortBy === id) {
-                  style = Object.assign({}, style, STYLES.header_active);
-                }
-                return (
-                  <td 
-                    id={id}
-                    key={index}
-                    onClick={(e) => this.handleSortChange(e)}
-                    style={style}
-                  >
-                    {h}
-                  </td>
-                );
-                
-              }
-            )
-          }
-        </tr>
-      </thead>
-    );
-  }
-
-  private renderStudyTable = (studies: IStudy[]) => {
-    if (!this.state.viewArchived) {
-      studies = studies.filter((s: IStudy) => !s.archived); 
-    }
-    return (
-      <table className="pt-table pt-interactive" style={{width: '100%'}}>
-        {this.renderTableHeaders(studies)}
-        {this.renderTableRows(studies)}
-      </table>
-    );
-  }
-
   public toggleNewStudyModal = () => {
     const newStudyModalState = this.state.newStudyModal;
     this.setState({
@@ -185,71 +102,110 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     });
   }
 
-  private handleSortChange = (e: any) => {
-    const newSortBy = e.target.id;
-    const currentSortBy = this.state.sortBy;
-    const currentSortOrder = this.state.sortOrder;
-    if (newSortBy === currentSortBy) {
-      this.setState({
-        sortOrder: (currentSortOrder === 'desc' ? 'asce' : 'desc'),
-      });
+  private renderStudyList = (studies: IStudy[]) => {
+    if (studies.length) {
+      
+      return (
+        <div>
+          {studies.map((study: IStudy, index: number) => {
+            return (
+              <Col
+                key={index}
+                xs={{span: 24}}
+                sm={{span: 12}}
+                md={{span: 8}}
+                lg={{span: 8}}
+                xl={{span: 6}}
+              >
+                <div onClick={() => this.navigateToStudy(study.id)}>
+                  <Card
+                    title={study.title}
+                    bordered={true}
+                    extra={(study.active) ? 'Active' : 'Inactive'}
+                    hoverable={true}
+                    style={{margin: '5px', height: '240px'}}
+                  >
+                    {study.description}
+                    <Charts.MiniProgress percent={78} strokeWidth={8} target={80}/>
+                    <div style={{ margin: '12px 0', width: '100%', borderBottom: '1px solid #e8e8e8' }}/>
+                    <span>Participants: 238</span>
+                  </Card>
+                </div>
+              </Col>
+            );
+          })}
+        </div>
+      );
+      
     } else {
-      this.setState({
-        sortBy: newSortBy,
-        sortOrder: 'desc',
-      });
+      return (
+        <div>No Studies</div>
+      );
     }
   }
 
   public render() {
 
-    let StudyTable = <Spinner/>;
+    let StudyList = <Spin/>;
 
     if (this.state.studies.length) {
-      StudyTable = this.renderStudyTable(this.state.studies);
+      StudyList = this.renderStudyList(this.state.studies);
     }
 
     return (
-      <div className="study-section">
-        <div className="toolbar">
-          <h3>Studies</h3>
-          <input className="pt-input" placeholder="Search..."/>
-          <Switch checked={this.state.viewArchived} label="View Archived" onChange={this.handleViewArchived}/>
-          <AnchorButton
-            text="Create Study"
-            iconName="add"
-            className="pt-intent-primary"
-            onClick={this.toggleNewStudyModal}
-          />
-        </div>
-        <div className="study-table">
-          {StudyTable}
-        </div>
-        <Dialog
-          iconName="inbox"
+      <div>
+        <PageHeader
+          title="Your Studies"
+          content={
+            <div>
+              <Input.Search
+                placeholder="Search Studies..."
+                enterButton={true}
+              />
+            </div>
+          }
+          breadCrumbList={[
+            {}
+          ]}
+        />
+        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff'}}>
+
+        <Row>
+          <Col span={16}>
+            <label>
+              View Archived
+              <Switch checked={this.state.viewArchived}  onChange={this.handleViewArchived}/>
+            </label>
+          </Col>
+          <Col span={8}>
+            <Button
+              onClick={this.toggleNewStudyModal}
+              style={{float: 'right'}}
+            >
+              Create New Study
+            </Button>
+          </Col>
+        </Row>
+        </Content>
+        <Content style={{ margin: '24px 16px'}}>
+          <Row>
+            {StudyList}
+          </Row>
+        </Content>
+        <Modal
           title="New Study"
-          canOutsideClickClose={false}
-          canEscapeKeyClose={false}
-          isOpen={this.state.newStudyModal}
-          onClose={this.toggleNewStudyModal}
+          maskClosable={false} 
+          visible={this.state.newStudyModal}
+          onCancel={this.toggleNewStudyModal}
         >
           <NewStudyModal
             toggleNewStudyModal={this.toggleNewStudyModal}
             updateStudies={this.updateStudies}
           />
-        </Dialog>
+        </Modal>
       </div>
     );
   }
 }
-
-const STYLES = {
-  header_active: {
-    fontWeight: 800,
-  },
-  header: {
-    cursor: 'pointer',
-  }
-};
 
 export default StudySection;

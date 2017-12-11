@@ -39,7 +39,8 @@ export interface INewTaskModalState {
     minutes: number;
   }[];
   studyId: string;
-  uploading: boolean;
+  modified: boolean;
+  loading: boolean;
   schedule: {
     scheduleType: string; // days, weeks, months, years, none
     everyN: number;
@@ -75,7 +76,8 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
         scheduledTime: new Date(),
       },
       studyId: this.props.studyId,
-      uploading: false,
+      loading: false,
+      modified: false,
       reminders: [],
       schedule: {
         scheduleType: 'none',
@@ -90,7 +92,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     e.preventDefault();
 
     this.setState({
-      uploading: true,
+      loading: true,
     });
 
     let { scheduledTime }  = this.state.task;
@@ -208,13 +210,13 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
       task[inputName] = val;
       this.setState({
         task,
-        uploading: true,
+        modified: true,
       });
     } else {
       task[val.target.name] = val.target.value;
       this.setState({
         task,
-        uploading: true,
+        modified: true,
       });      
     }
 
@@ -431,7 +433,8 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
 
             <Button onClick={(e: any) => this.props.toggleNewTaskModal(e)}>Cancel</Button>
             <Button
-              disabled={!this.state.uploading}
+              disabled={!this.state.modified}
+              loading={this.state.loading}
               htmlType="submit"
               type="primary"
             >

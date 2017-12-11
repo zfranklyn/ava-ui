@@ -1,6 +1,6 @@
-.ava-container {
-    height: 100%;
+.sidebar-logo {
+    height: 48px;
     width: 100%;
-    background-color: rgba(0,0,0,0.05);
-    padding-left: 48px;
-}
+    background: url('./logo.svg') no-repeat 50%;
+    background-size: 60%;
+  }
