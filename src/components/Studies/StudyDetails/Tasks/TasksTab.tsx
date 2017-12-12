@@ -5,6 +5,8 @@ import {
   Modal,
   Button,
   Spin,
+  Table,
+  Badge,
 } from 'antd';
 import './TasksTab.css';
 import ExistingTaskModal from './ExistingTaskModal';
@@ -41,14 +43,49 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     };
   }
 
-  private headersToShow = [
-    {headerToRender: 'Scheduled Time', headerInDB: 'scheduledTime'},
-    {headerToRender: 'Status', headerInDB: 'completed'},
-    {headerToRender: 'Task Type', headerInDB: 'type'},
-    {headerToRender: 'Description', headerInDB: 'description'},
-    {headerToRender: 'Medium', headerInDB: 'mediumType'},
-    {headerToRender: 'Message', headerInDB: 'message'},
+  private columns = [
+    {
+      title: 'Scheduled Time',
+      key: 'scheduledTime',
+      dataIndex: 'scheduledTime',
+    },
+    {
+      title: 'Status',
+      key: 'completed',
+      dataIndex: 'completed',
+    },
+    {
+      title: 'Task Type',
+      key: 'type',
+      dataIndex: 'type',
+    },
+    {
+      title: 'Description',
+      key: 'description',
+      dataIndex: 'description',
+    },
+    {
+      title: 'Medium',
+      key: 'mediumType',
+      dataIndex: 'mediumType',
+    },
+    {
+      title: 'Message',
+      key: 'message',
+      dataIndex: 'message',
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      dataIndex: 'actions',
+    },
   ];
+
+  private rowSelection = {
+    onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+  };
 
   public componentDidMount() {
     this.updateTasksData();
@@ -70,69 +107,67 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     .catch(console.log);
   }
 
-  private renderRows = (studies: ITask[]) => {
-    const headerNamesInDB = this.headersToShow.map(h => h.headerInDB);
-    return (
-      <tbody>
-        {studies.map((task: ITask, key1: number) => {
-          return (
-            <tr
-              key={key1}
-              onClick={() => this.toggleExistingTaskModal(task.id)}
-              className={`${task.completed ? 'completed' : ''}`}
-            >
-              {headerNamesInDB.map((header: any, key2: number) => {
+  private nestify = (data: ITask[]) => {
+    // extract main tasks
+    let mainTasks = data.filter((task: ITask) => task.type !== 'REMINDER');
+    // for each main task, find reminders and nest them
+    mainTasks = mainTasks.map((task: ITask) => {
+      // find subtasks
+      const currentTaskId = task.id;
+      const subTasks = data.filter((subTask: ITask) => subTask.ParentSurveyTaskId === currentTaskId);
+      return (task.type === 'SURVEY') ? Object.assign({}, task, {children: subTasks}) : task;
+    });
+    return mainTasks;
+  }
 
-                let cellContents;
-                // varied rendering logic
-                switch (header) {
-                  case 'scheduledTime':
-                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:mm A');
-                    break;
-                  case 'createdAt':
-                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:mm A');
-                    break;
-                  case 'updatedAt':
-                    cellContents = moment(task[header]).format('MMM Do, YYYY hh:mm A');
-                    break;
-                  case 'completed':
-                    cellContents = (task[header] ? 'Completed' : 'Pending');
-                    break;
-                  default:
-                    cellContents = `${task[header]}`;
-                    break;
-                }
+  private cleanData = (data: ITask[]) => {
+    console.log(data);
+    const cleanedData = data.map((task: ITask) => {
+      const newTask = {};
+      const keys = Object.keys(task);
 
-                return (
-                  <td key={key2}>
-                    {cellContents}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
+      keys.map(keyName => {
+        switch (keyName) {
+          case 'scheduledTime':
+            newTask[keyName] = `${moment(task[keyName]).format('hh:mm A MMM Do, YYYY')}`;
+            break;
+          case 'createdAt':
+            newTask[keyName] = `${moment(task[keyName]).format('hh:mm A MMM Do, YYYY')}`;
+            break;
+          case 'updatedAt':
+            newTask[keyName] = `${moment(task[keyName]).format('hh:mm A MMM Do, YYYY')}`;
+            break;
+          case 'completed':
+            newTask[keyName] = (task[keyName] ? 
+              <Badge status="success" text="Completed"/>
+              : <Badge status="default" text="Pending"/>);
+            break;
+          default:
+            newTask[keyName] = `${task[keyName]}`;
+            break;
+        }
+      });
+    
+      return newTask;
+    });
+    console.log(cleanedData);
+    return cleanedData;
+  }
+
+  private enrichDataWithRowKeys = (data: any[]) =>  {
+    return data.map((d: any, i: number) => Object.assign(
+      {}, d, {key: i, actions: <a onClick={() => this.toggleExistingTaskModal(d.id)}>Details</a>})
     );
   }
 
-  private renderHeaders = (tasks: ITask[]) => {
-    const headerNamesToRender = this.headersToShow.map(h => h.headerToRender);
+  private renderTaskTable = (taskData: ITask[]) => {
     return (
-      <thead>
-        <tr>
-          {headerNamesToRender.map((header: string, index: number) => <td key={index}>{header}</td>)}
-        </tr>
-      </thead>
-    );
-  }
-
-  private renderTaskTable = (tasks: ITask[]) => {
-    return (
-      <table className="pt-table pt-condensed pt-striped pt-interactive" style={{width: '100%'}}>
-        {this.renderHeaders(tasks)}
-        {this.renderRows((tasks))}
-      </table>
+      <Table
+        size="small"
+        rowSelection={this.rowSelection}
+        columns={this.columns}
+        dataSource={this.nestify(this.enrichDataWithRowKeys(this.cleanData(taskData)))}
+      />
     );
   }
 
@@ -143,10 +178,10 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     });
   }
 
-  private toggleExistingTaskModal = (task: any) => {
+  private toggleExistingTaskModal = (taskId: any) => {
     const { existingTaskModalOpen } = this.state;
     this.setState({
-      currentTaskId: task,
+      currentTaskId: taskId,
       existingTaskModalOpen: !existingTaskModalOpen,
     });
   }

@@ -82,6 +82,7 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
   private renderTable = () => {
     return (
       <Table
+        size="small"
         rowSelection={this.rowSelection}
         columns={this.columns}
         dataSource={this.enrichDataWithRowKeys(this.state.users)}

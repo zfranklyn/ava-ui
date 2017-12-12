@@ -1,13 +1,13 @@
 import * as React from 'react';
 import {
-  // Spinner,
   Button,
   Tag,
-} from '@blueprintjs/core';
-import {
-  // Link
-} from 'react-router-dom';
-import './NewStudyModal.css';
+  Input,
+  Icon,
+  Divider,
+} from 'antd';
+const TextArea = Input.TextArea;
+const InputGroup = Input.Group;
 import {
   // IStudy,
   IStudyAPI,
@@ -98,7 +98,7 @@ class NewStudyModal extends React.Component<INewStudyModalProps, INewStudyModalS
     const keys = Object.keys(metadata);
     return (
       keys.map((k: string, index: number) => (
-        <Tag key={index} onRemove={() => this.handleRemoveTag(k)}>
+        <Tag color="blue" closable={true} key={index} onClose={() => this.handleRemoveTag(k)}>
           {k}:{metadata[k]}
         </Tag>
       ))
@@ -147,65 +147,62 @@ class NewStudyModal extends React.Component<INewStudyModalProps, INewStudyModalS
 
     return (
       <div>
-        <div className="pt-dialog-body">
-          <label className="pt-label">
+          <label>
             Study Title
-            <input
-              className="pt-input"
+            <Input
               type="text"
-              dir="auto"
               value={this.state.title}
               style={{width: '100%'}}
               onChange={(e) => this.handleChangeTitle(e)}
             />
           </label>
-          <label className="pt-label">
+          <label>
             Study Description
-            <textarea
-              className="pt-input"
-              dir="auto"
+            <TextArea
               style={{width: '100%'}}
               value={this.state.description}
               onChange={(e) => this.handleChangeDescription(e)}
             />
           </label>
           <div className="metadata-section">
-            <label className="pt-label">
+            <label>
               Metadata
             </label>
-            <input
+            <InputGroup compact={true}>
+            <Input
               value={this.state.key}
-              onChange={(e) => this.handleChangeKey(e)}
+              onChange={this.handleChangeKey}
               className="pt-input"
               type="text"
               placeholder="Key"
-              dir="auto"
+              style={{maxWidth: '200px'}}
             />
-            <input
-              value={this.state.value}
-              onChange={(e) => this.handleChangeValue(e)}
-              className="pt-input"
-              type="text"
-              placeholder="Value"
-              dir="auto"
-            />
-            <Button iconName="add" onClick={() => this.handleAddKeyValue()}/>
+              <Input
+                value={this.state.value}
+                onChange={this.handleChangeValue}
+                className="pt-input"
+                type="text"
+                placeholder="Value"
+                style={{maxWidth: '200px'}}
+              />
+              <Button onClick={this.handleAddKeyValue}>
+                <Icon type="plus" />
+              </Button>
+            </InputGroup>
           </div>          
           <div className="tags-section" style={STYLES.tagSection}>
             {Tags}
           </div>
-        </div>
-        <div className="pt-dialog-footer">
-          <div className="pt-dialog-footer-actions">
-            <Button onClick={() => this.props.toggleNewStudyModal()} text="Cancel"/>
-            <Button
-              className="pt-intent-primary"
-              text="Create Study"
-              loading={this.state.uploading}
-              onClick={() => this.submitStudy()}
-            />
-          </div>
-        </div>
+          <Divider/>
+          <Button onClick={() => this.props.toggleNewStudyModal()}>Cancel</Button>
+          <Button
+            className="pt-intent-primary"
+            loading={this.state.uploading}
+            type="primary"
+            onClick={() => this.submitStudy()}
+          >
+            Create Study
+          </Button>
       </div>
     );
   }

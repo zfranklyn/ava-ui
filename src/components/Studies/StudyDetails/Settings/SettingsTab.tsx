@@ -1,8 +1,14 @@
 import * as React from 'react';
 import {
-  Tag,
   Button,
-} from '@blueprintjs/core';
+  Input,
+  Tag,
+  Icon,
+  Divider,
+} from 'antd';
+const TextArea = Input.TextArea;
+const InputGroup = Input.Group;
+
 import { IStudyAPI } from './../../../../sharedTypes';
 import axios from 'axios';
 // import * as moment from 'moment';
@@ -111,7 +117,7 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
     const keys = Object.keys(metadata);
     return (
       keys.map((k: string, index: number) => (
-        <Tag style={{margin: '2px'}}key={index} onRemove={() => this.handleRemoveTag(k)}>
+        <Tag color="blue" closable={true} key={index} onClose={() => this.handleRemoveTag(k)}>
           {k}:{metadata[k]}
         </Tag>
       ))
@@ -150,11 +156,10 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
       <form onSubmit={this.handleSubmitForm}>
         <label className="pt-label">
           Study Title
-          <input
+          <Input
             name="title"
             className="pt-input"
             type="text"
-            dir="auto"
             value={this.state.title}
             style={{width: '100%'}}
             onChange={this.handleChangeTitle}
@@ -162,10 +167,9 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
         </label>
         <label className="pt-label">
           Study Description 
-          <textarea
+          <TextArea
             name="description"
             className="pt-input"
-            dir="auto"
             value={this.state.description}
             style={{width: '100%'}}
             onChange={this.handleChangeDescription}
@@ -176,33 +180,41 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
           <label className="pt-label">
             Metadata
           </label>
-          <input
-            value={this.state.key}
-            onChange={this.handleChangeKey}
-            className="pt-input"
-            type="text"
-            placeholder="Key"
-            dir="auto"
-          />
-          <input
-            value={this.state.value}
-            onChange={this.handleChangeValue}
-            className="pt-input"
-            type="text"
-            placeholder="Value"
-            dir="auto"
-          />
-          <Button iconName="add" onClick={this.handleAddKeyValue}/>
+          <InputGroup compact={true}>
+            <Input
+              value={this.state.key}
+              onChange={this.handleChangeKey}
+              className="pt-input"
+              type="text"
+              placeholder="Key"
+              style={{maxWidth: '200px'}}
+            />
+            <Input
+              value={this.state.value}
+              onChange={this.handleChangeValue}
+              className="pt-input"
+              type="text"
+              placeholder="Value"
+              style={{maxWidth: '200px'}}
+            />
+            <Button onClick={this.handleAddKeyValue}>
+              <Icon type="plus" />
+            </Button>
+          </InputGroup>
+
         </div>
      
         <div className="tags-section" style={STYLES.tagSection}>
           {Tags}
         </div>     
 
+        <Divider/>
+
         <Button
           disabled={!this.state.modified}
-          type="submit"
+          htmlType="submit"
           loading={this.state.uploading}
+          type="primary"
         >
           Save Changes
         </Button>

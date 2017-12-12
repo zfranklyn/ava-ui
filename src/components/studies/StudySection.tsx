@@ -195,6 +195,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
         <Modal
           title="New Study"
           maskClosable={false} 
+          footer={null}
           visible={this.state.newStudyModal}
           onCancel={this.toggleNewStudyModal}
         >

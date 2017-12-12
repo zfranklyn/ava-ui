@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { Tabs, Spin } from 'antd';
-import {
-  // Link
-} from 'react-router-dom';
-import './StudyDetails.css';
+import { 
+  Tabs,
+  Spin,
+  Layout,
+} from 'antd';
+const { Content } = Layout;
+const PageHeader = require('ant-design-pro/lib/PageHeader');
 import TasksTab from './Tasks/TasksTab';
 import ParticipantsTab from './Participants/ParticipantsTab';
 import SettingsTab from './Settings/SettingsTab';
@@ -92,14 +94,16 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
 
     if (this.state.study && this.state.study.id) {
       StudyDetailsComponent = (
-        <div className="study-details-toolbar">
-          <div>
-            <h4>{this.state.study.title}</h4>
-            <p>
-              {this.state.study.description}
-            </p>
-          </div>
-          <div className="tab-section">
+        <div>
+          <PageHeader
+            title={this.state.study.title}
+            content={
+              <div>
+                {this.state.study.description}
+              </div>
+            }
+          />
+          <Content style={{background: '#fff'}}>
             <Tabs onChange={this.handleTabChange} animated={false}>
               <Tabs.TabPane
                 tab="Overview"
@@ -139,7 +143,7 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
                 />
               </Tabs.TabPane>
             </Tabs>
-          </div>
+          </Content>
         </div>
       );
     }

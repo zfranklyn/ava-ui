@@ -23,6 +23,7 @@ export interface ITask {
   id?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  ParentSurveyTaskId: string;
 }
 
 export interface ITaskAPI {
@@ -35,10 +36,24 @@ export interface ITaskAPI {
   completed: boolean;
   createdAt: string;
   updatedAt: string;
+  studyId: string;
+  ParentSurveyTaskId: string;
+  taskId: string;
 }
 
 export const convertTask = (rawData: ITaskAPI): ITask => {
-  const { scheduledTime, type, message, mediumType, description, id, createdAt, updatedAt, completed } = rawData;
+  const { 
+    scheduledTime, 
+    type, 
+    message, 
+    mediumType, 
+    description, 
+    id, 
+    createdAt, 
+    updatedAt, 
+    completed,
+    ParentSurveyTaskId,
+  } = rawData;
   return {
     scheduledTime: new Date(scheduledTime),
     type: type as TaskType,
@@ -48,5 +63,6 @@ export const convertTask = (rawData: ITaskAPI): ITask => {
     message, description,
     createdAt: new Date(createdAt),
     updatedAt: new Date(updatedAt),
+    ParentSurveyTaskId,
   };
 };

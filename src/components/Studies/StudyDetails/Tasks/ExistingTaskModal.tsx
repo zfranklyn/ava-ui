@@ -1,20 +1,20 @@
 import * as React from 'react';
 import {
   Button,
-  Spinner,
-  // Intent,
-  Popover,
-  // PopoverInteractionKind,
-  // Position,
-} from '@blueprintjs/core';
-import {
-  DateTimePicker,
-  TimePickerPrecision,
-} from '@blueprintjs/datetime';
+  Input,
+  DatePicker,
+  Select,
+  Spin,
+} from 'antd';
+const Option = Select.Option;
+const TextArea = Input.TextArea;
+
 import {
   ITaskAPI,
   ITask,
   convertTask,
+  MediumType,
+  TaskType,
 } from './../../../../sharedTypes';
 import * as moment from 'moment';
 import axios from 'axios';
@@ -72,7 +72,30 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
     }
   }
 
-  private handleChangeTaskTime = (newDate: Date) => {
+  private handleChangeTaskType = (val: string) => {
+    const task = this.state.task;
+    if (task) {
+      task.type = val as TaskType;
+      this.setState({
+        task,
+        modified: true,
+      });
+    }
+  }
+
+  private handleChangeMediumType = (val: string) => {
+    const task = this.state.task;
+    if (task) {
+      task.mediumType = val as MediumType;
+      this.setState({
+        task,
+        modified: true,
+      });
+    }
+
+  }
+
+  private handleChangeTaskTime = (newDate: any) => {
     const task = this.state.task;
     if (task) {
       task.scheduledTime = newDate;
@@ -96,7 +119,6 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
     axios.put(`http://localhost:8080/task/${this.state.task.id}`, this.state.task)
     .then((res: any) => res.data)
     .then((updatedTask: ITaskAPI) => {
-      console.log(updatedTask);
       this.setState({
         task: convertTask(updatedTask),
         modified: false,
@@ -142,34 +164,32 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
                 <label className="pt-label">
                   Task Type
                   <div className="pt-select">
-                    <select
+                    <Select
                       defaultValue={this.state.task.type}
-                      name="type"
-                      onChange={this.handleChange}
+                      onChange={this.handleChangeTaskType}
                     >
-                      <option value="SURVEY">Survey</option>
-                      <option value="REMINDER">Reminder</option>
-                      <option value="CUSTOM_MESSAGE">Custom Message</option>
-                    </select>
+                      <Option value="SURVEY">Survey</Option>
+                      <Option value="REMINDER">Reminder</Option>
+                      <Option value="CUSTOM_MESSAGE">Custom Message</Option>
+                    </Select>
                   </div>
                 </label>            
                 <label className="pt-label">
                   Message Medium
                   <div className="pt-select">
-                    <select
+                    <Select
                       defaultValue={this.state.task.mediumType}
-                      name="mediumType"
-                      onChange={this.handleChange}
+                      onChange={this.handleChangeMediumType}
                     >
-                      <option value="SMS">SMS</option>
-                      <option value="EMAIL">Email</option>
-                    </select>
+                      <Option value="SMS">SMS</Option>
+                      <Option value="EMAIL">Email</Option>
+                    </Select>
                   </div>
                 </label>
 
                 <label className="pt-label">
                   Description
-                  <textarea
+                  <TextArea
                     name="description"
                     className="pt-input pt-fill"
                     onChange={this.handleChange}
@@ -186,41 +206,32 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
                     defaultValue={this.state.task.message}
                   />
                 </label>
-
-                <Popover>
-                  <Button className="pt-minimal">
-                    Scheduled Time: {moment(this.state.task.scheduledTime).format('YYYY-MM-DD HH:MM:ss')}
-                  </Button>
-                  <DateTimePicker
-                    onChange={this.handleChangeTaskTime}
-                    datePickerProps={
-                      {
-                        minDate: new Date(),
-                        maxDate: new Date(moment().add(5, 'years').format()),
-                      }
-                    }
-                    timePickerProps={
-                      {
-                        precision: TimePickerPrecision.SECOND,
-                      }
-                    }
-                  />
-                </Popover>
+                <DatePicker
+                  showTime={true}
+                  format="MM-DD-YYYY HH:mm:ss"
+                  defaultValue={moment(this.state.task.scheduledTime)}
+                  onChange={this.handleChangeTaskTime}
+                  onOk={this.handleChangeTaskTime}
+                />
               </div>
             <div className="pt-dialog-footer">
-              <Button text="Cancel" onClick={() => this.props.toggleExistingTaskModal()}/>
+              <Button onClick={() => this.props.toggleExistingTaskModal()}>
+                Cancel
+              </Button>
               <Button
-                text="Delete"
                 onClick={() => this.handleDeleteTask()}
-                className="pt-intent-danger"
+                type="danger"
                 loading={this.state.deleting}
-              />
+              >
+                Delete
+              </Button>
               <Button
-                text="Save Changes"
-                className="pt-intent-primary"
+                type="primary"
                 disabled={!this.state.modified}
-                type="submit"
-              />
+                htmlType="submit"
+              >
+                Save Changes
+              </Button>
             </div>
           </form>
         </div>
@@ -228,7 +239,7 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
     } else {
       return (
         <div>
-          <Spinner/>
+          <Spin/>
         </div>
       );
     }
