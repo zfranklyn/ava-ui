@@ -1,21 +1,25 @@
 import * as React from 'react';
 import {
-  Switch,
   Modal,
   Button,
   Spin,
   Input,
   Row,
-  Card,
   Col,
+  List,
+  Badge,
+  Card,
   Layout,
+  Icon,
+  Progress,
+  Radio,
 } from 'antd';
+import {
+  Link,
+} from 'react-router-dom';
 const PageHeader = require('ant-design-pro/lib/PageHeader');
-const Charts = require('ant-design-pro/lib/Charts');
 import 'ant-design-pro/dist/ant-design-pro.css';
 const { Content } = Layout;
-import {
-} from 'react-router-dom';
 import NewStudyModal from './NewStudyModal/NewStudyModal';
 import './StudySection.css';
 import {
@@ -23,7 +27,7 @@ import {
   IStudyAPI,
   convertStudy,
 } from './../../sharedTypes';
-// import * as moment from 'moment';
+import * as moment from 'moment';
 // import * as _ from 'lodash';
 
 /*
@@ -58,19 +62,6 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     };
   }
 
-  private navigateToStudy = (studyId: any) => (
-    this.props.history.push(`/study/${studyId}`)
-  )
-
-  // private headersToShow = [
-  //   {headerToRender: 'Study Name', headerInDB: 'title'},
-  //   {headerToRender: 'Description', headerInDB: 'description'},
-  //   {headerToRender: 'Status', headerInDB: 'active'},
-  //   {headerToRender: 'Last Modified', headerInDB: 'updatedAt'},
-  //   {headerToRender: 'Creation Date', headerInDB: 'createdAt'},
-  //   {headerToRender: 'Archived', headerInDB: 'archived'},
-  // ];
-
   public componentDidMount() {
     this.updateStudies();
   }
@@ -95,46 +86,50 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     });
   }
 
-  private handleViewArchived = () => {
-    const viewArchived = this.state.viewArchived;
-    this.setState({
-      viewArchived: !viewArchived,
-    });
-  }
-
   private renderStudyList = (studies: IStudy[]) => {
     if (studies.length) {
       
       return (
-        <div>
-          {studies.map((study: IStudy, index: number) => {
-            return (
-              <Col
-                key={index}
-                xs={{span: 24}}
-                sm={{span: 12}}
-                md={{span: 8}}
-                lg={{span: 8}}
-                xl={{span: 6}}
+        <Content>
+          <List
+            itemLayout="vertical"
+            dataSource={studies}
+            renderItem={(study: IStudy, key: number) => (
+              <List.Item 
+                extra={
+                  <Row style={{width: '360px'}} gutter={8}>
+                    <Col lg={{span: 6}} md={{span: 12}}>
+                      <span>Status</span>
+                      <p>
+                        {
+                          <Badge 
+                            status={(study.active) ? 'success' : 'default'} 
+                            text={(study.active) ? 'Active' : 'Inactive'}
+                          />
+                        }
+                      </p>
+                    </Col>
+                    <Col lg={{span: 6}} md={{span: 12}}>
+                      <span>Last Modified</span>
+                      <p>{moment(study.updatedAt).fromNow()}</p>
+                    </Col>
+                    <Col lg={{span: 12}} md={{span: 24}}>
+                      <label>
+                        Study Progress
+                        <Progress percent={57} size="small" status="active" />
+                      </label>
+                    </Col>
+                  </Row>}
               >
-                <div onClick={() => this.navigateToStudy(study.id)}>
-                  <Card
-                    title={study.title}
-                    bordered={true}
-                    extra={(study.active) ? 'Active' : 'Inactive'}
-                    hoverable={true}
-                    style={{margin: '5px', height: '240px'}}
-                  >
-                    {study.description}
-                    <Charts.MiniProgress percent={78} strokeWidth={8} target={80}/>
-                    <div style={{ margin: '12px 0', width: '100%', borderBottom: '1px solid #e8e8e8' }}/>
-                    <span>Participants: 238</span>
-                  </Card>
-                </div>
-              </Col>
-            );
-          })}
-        </div>
+                <List.Item.Meta
+                  title={<Link to={`/study/${study.id}`}>{study.title}</Link>}
+                  description={study.description}
+                />
+
+              </List.Item>
+            )}
+          />
+        </Content>
       );
       
     } else {
@@ -155,7 +150,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
     return (
       <div>
         <PageHeader
-          title="Your Studies"
+          title="Research Center"
           content={
             <div>
               <Input.Search
@@ -168,29 +163,30 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
             {}
           ]}
         />
-        <Content style={{ margin: '24px 16px', padding: 24, background: '#fff'}}>
 
-        <Row>
-          <Col span={16}>
-            <label>
-              View Archived
-              <Switch checked={this.state.viewArchived}  onChange={this.handleViewArchived}/>
-            </label>
-          </Col>
-          <Col span={8}>
-            <Button
-              onClick={this.toggleNewStudyModal}
-              style={{float: 'right'}}
-            >
-              Create New Study
-            </Button>
-          </Col>
-        </Row>
-        </Content>
         <Content style={{ margin: '24px 16px'}}>
-          <Row>
+
+          <Card
+            title={
+              <div>
+                <Radio.Group>
+                  <Radio.Button value="ACTIVE">Active Studies</Radio.Button>
+                  <Radio.Button value="INACTIVE">Inactive Studies</Radio.Button>
+                  <Radio.Button value="ALL">All Studies</Radio.Button>
+                </Radio.Group>
+                <Button
+                  onClick={this.toggleNewStudyModal}
+                  size="large"
+                  type="dashed"
+                  style={{float: 'right'}}
+                >
+                  <Icon type="plus" />Create New Study
+                </Button>
+              </div>
+            }
+          >
             {StudyList}
-          </Row>
+          </Card>
         </Content>
         <Modal
           title="New Study"

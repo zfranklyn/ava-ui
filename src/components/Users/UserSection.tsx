@@ -4,7 +4,12 @@ import {
   IUserAPI,
   convertUser,
 } from './../../sharedTypes';
-import './UserSection.css';
+import {
+  Table,
+  Layout,
+} from 'antd';
+const { Content } = Layout;
+const PageHeader = require('ant-design-pro/lib/PageHeader');
 import { Spinner } from '@blueprintjs/core';
 
 export interface IUserSearchConditions {
@@ -28,13 +33,42 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
     };
   }
 
-  private headersToShow = [
-    {headerToRender: 'ID', headerInDB: 'id'},
-    {headerToRender: 'First Name', headerInDB: 'firstName'},
-    {headerToRender: 'Last Name', headerInDB: 'lastName'},
-    {headerToRender: 'Email', headerInDB: 'email'},
-    {headerToRender: 'User Type', headerInDB: 'userType'},
-    {headerToRender: 'Role', headerInDB: 'userRole'},
+  private columns = [
+    {
+      title: 'ID',
+      key: 'id',
+      dataIndex: 'd',
+    },
+    {
+      title: 'First Name',
+      key: 'firstName',
+      dataIndex: 'firstName',
+    },
+    {
+      title: 'Last Name',
+      key: 'lastNamej',
+      dataIndex: 'lastName',
+    },
+    {
+      title: 'Email',
+      key: 'email',
+      dataIndex: 'email',
+    },
+    {
+      title: 'User Type',
+      key: 'userType',
+      dataIndex: 'userType',
+    },
+    {
+      title: 'User Role',
+      key: 'userRole',
+      dataIndex: 'userRole',
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      dataIndex: 'actions',
+    },
   ];
 
   public componentDidMount() {
@@ -54,53 +88,30 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
     .catch(console.log);
   }
 
-  private renderTableRows = (studies: IUser[]) => {
-    // const headerNames = Object.keys(studies[0]);
-    const headerNamesInDB = this.headersToShow.map(h => h.headerInDB);
-    return (
-      <tbody>
-        {studies.map((study: IUser, key1: number) => {
-          return (
-            <tr key={key1}>
-              {headerNamesInDB.map((header: any, key2: number) => {
-
-                let cellContents;
-                switch (header) {
-                  default:
-                    cellContents = `${study[header]}`;
-                    break;
-                }
-
-                return (
-                  <td key={key2}>
-                    {cellContents}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    );
+  private toggleExistingUserModal = (userId: string) => {
+    console.log(userId);
   }
 
-  private renderTableHeaders = (studies: IUser[]) => {
-    const headerNamesToRender = this.headersToShow.map(h => h.headerToRender);
-    return (
-      <thead>
-        <tr>
-          {headerNamesToRender.map((h: string, index: number) => <td key={index}>{h}</td>)}
-        </tr>
-      </thead>
+  private rowSelection = {
+    onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+  };
+
+  private enrichDataWithRowKeys = (data: any[]) =>  {
+    return data.map((d: any, i: number) => Object.assign(
+      {}, d, {key: i, actions: <a onClick={() => this.toggleExistingUserModal(d.id)}>Details</a>})
     );
-  }
+  }  
 
   private renderUserTable = (studies: IUser[]) => {
     return (
-      <table className="pt-table pt-interactive" style={{width: '100%'}}>
-        {this.renderTableHeaders(studies)}
-        {this.renderTableRows(studies)}
-      </table>
+      <Table
+        size="small"
+        rowSelection={this.rowSelection}
+        columns={this.columns}
+        dataSource={this.enrichDataWithRowKeys(this.state.users)}
+      />
     );
   }
 
@@ -113,10 +124,14 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
         }
     
         return (
-          <div className="user-section">
-            <h1>User Section</h1>
-            {UserTable}
-          </div>
+          <Layout>
+            <PageHeader
+              title="Users"
+            />
+            <Content style={{margin: 24, background: '#fff', padding: 24}}>
+              {UserTable}
+            </Content>
+          </Layout>
         );
       }
 }

@@ -9,7 +9,7 @@ import {
   Menu,
   Icon,
 } from 'antd';
-const { Sider, Header } = Layout;
+const { Sider, Header, Content, } = Layout;
 import 'antd/dist/antd.css';
 
 // import './AppContainer.css';
@@ -64,9 +64,11 @@ class AppContainer extends React.Component<{}, {}> {
             <Header style={STYLE.HEADER}>
               Header
             </Header>
-            <Route path="/studies" component={StudySection}/>
-            <Route path="/study/:studyId" component={StudyDetails}/>
-            <Route path="/users" component={UserSection}/>
+            <Content>
+              <Route path="/studies" component={StudySection}/>
+              <Route path="/study/:studyId" component={StudyDetails}/>
+              <Route path="/users" component={UserSection}/>
+            </Content>
           </Layout> 
         </Layout>
 

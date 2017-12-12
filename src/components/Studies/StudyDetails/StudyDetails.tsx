@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { 
-  Tabs,
   Spin,
   Layout,
 } from 'antd';
@@ -54,18 +53,6 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
     };
   }
 
-  /*
-  private navigateToStudy = (studyId: any) => (
-    this.props.history.push(`/study/${studyId}`)
-  )
-
-  private headersToShow = [
-    {headerToRender: 'Title', headerInDB: 'title'},
-    {headerToRender: 'Description', headerInDB: 'description'},
-    {headerToRender: 'Active', headerInDB: 'active'},
-  ];
-  */
-
   public componentDidMount() {
     this.updateStudies();
   }
@@ -84,8 +71,10 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
     .catch(console.log);
   }
 
-  private handleTabChange = () => {
-    console.log('Changed Tab');
+  private handleTabChange = (e: any) => {
+    this.setState({
+      activeTab: e,
+    });
   }
 
   public render() {
@@ -93,6 +82,29 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
     let StudyDetailsComponent = <Spin/>;
 
     if (this.state.study && this.state.study.id) {
+
+      let CurrentTab = <div>null</div>;
+      
+      switch (this.state.activeTab) {
+        case TabNames.OVERVIEW:
+          CurrentTab = <OverviewTab studyId={this.state.study.id}/>;
+          break;
+        case TabNames.TASKS:
+          CurrentTab = <TasksTab studyId={this.state.study.id}/>;
+          break;
+        case TabNames.PARTICIPANTS:
+          CurrentTab = <ParticipantsTab studyId={this.state.study.id}/>;
+          break;
+        case TabNames.MESSAGES:
+          CurrentTab = <div>Messages</div>;
+          break;
+        case TabNames.SETTINGS:
+          CurrentTab = <SettingsTab studyId={this.state.study.id}/>;
+          break;
+        default:
+          break;
+      }
+
       StudyDetailsComponent = (
         <div>
           <PageHeader
@@ -102,47 +114,32 @@ class StudyDetails extends React.Component<IStudyDetailsProps, IStudyDetailsStat
                 {this.state.study.description}
               </div>
             }
+            tabList={[
+              {
+                key: TabNames.OVERVIEW,
+                tab: 'Overview',
+              },
+              {
+                key: TabNames.TASKS,
+                tab: 'Tasks',
+              },
+              {
+                key: TabNames.MESSAGES,
+                tab: 'Messages',
+              },
+              {
+                key: TabNames.PARTICIPANTS,
+                tab: 'Participants',
+              },
+              {
+                key: TabNames.SETTINGS,
+                tab: 'Settings',
+              },
+            ]}
+            onTabChange={this.handleTabChange}
           />
-          <Content style={{background: '#fff'}}>
-            <Tabs onChange={this.handleTabChange} animated={false}>
-              <Tabs.TabPane
-                tab="Overview"
-                key="1"
-                forceRender={true}
-              >
-                <OverviewTab studyId={this.state.study.id}/>
-              </Tabs.TabPane>
-              <Tabs.TabPane
-                tab="Tasks"
-                key="2"
-                forceRender={true}
-              >
-                <TasksTab studyId={this.state.study.id}/>
-              </Tabs.TabPane>
-              <Tabs.TabPane
-                tab="Participants"
-                key="3"
-                forceRender={true}
-              >
-                <ParticipantsTab studyId={this.state.study.id}/>
-              </Tabs.TabPane>
-              <Tabs.TabPane
-                tab="Messages"
-                key="4"
-                forceRender={true}
-              >
-                Hello
-              </Tabs.TabPane>
-              <Tabs.TabPane
-                tab="Settings"
-                key="5"
-                forceRender={true}
-              >
-                <SettingsTab
-                  studyId={this.state.study.id}
-                />
-              </Tabs.TabPane>
-            </Tabs>
+          <Content style={{margin: 24, background: '#fff', padding: 24}}>
+            {CurrentTab}
           </Content>
         </div>
       );
