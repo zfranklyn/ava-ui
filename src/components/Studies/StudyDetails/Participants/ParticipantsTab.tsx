@@ -3,12 +3,14 @@ import {
   Button,
   Spin,
   Table,
+  Modal,
 } from 'antd';
 import {
   IUserAPI,
 } from './../../../../sharedTypes';
 
 import axios from 'axios';
+import * as _ from 'lodash';
 
 export interface IParticipantsTabProps {
   studyId: string;
@@ -16,7 +18,10 @@ export interface IParticipantsTabProps {
 
 export interface IParticipantsTabState {
   users: IUserAPI[];
+  allUsers: IUserAPI[];
   loading: boolean;
+  addParticipantModalVisible: boolean;
+  potentialParticipantsToAdd: IUserAPI[];
 }
 
 class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipantsTabState> {
@@ -26,6 +31,9 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
     this.state = {
       users: [],
       loading: true,
+      allUsers: [],
+      potentialParticipantsToAdd: [],
+      addParticipantModalVisible: false,
     };
   }
 
@@ -79,6 +87,7 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
   };
+
   private renderTable = () => {
     return (
       <Table
@@ -94,6 +103,41 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
     return data.map((d: any, i: number) => Object.assign({}, d, {key: i}));
   }
 
+  private toggleAddParticipantModal = () => {
+    this.setState({
+      addParticipantModalVisible: !this.state.addParticipantModalVisible,
+    });
+    this.getUserData();
+  }
+
+  private addParticipantRowSelection = {
+    onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
+      this.setState({
+        potentialParticipantsToAdd: selectedRows,
+      });
+    },
+    getCheckboxProps: (user: any) => ({
+      disabled: !_.findIndex(user.studies, ((study: any) => study.id === this.props.studyId)),
+    }),
+  };
+
+  private handleAddParticipant = () => {
+    this.state.potentialParticipantsToAdd.map((user: IUserAPI) => {
+      axios.post(`http://localhost:8080/actions/addUserToStudy?userId=${user.id}&studyId=${this.props.studyId}`)
+      .then(() => {
+        this.fetchUserData();
+        this.toggleAddParticipantModal();
+      })
+      .catch(console.log);
+    });
+  }
+
+  private getUserData = () => {
+    axios.get(`http://localhost:8080/users`)
+    .then(res => res.data)
+    .then(data => this.setState({ allUsers: data }));
+  }
+
   public render() {
     if (this.state.loading) {
       return (
@@ -104,11 +148,23 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
     } else {
       return (
         <div>
-  
-          <Button>Add Participant</Button>
-          <Button>Recruit Participant</Button>
+          <Button onClick={this.toggleAddParticipantModal}>Add Participants</Button>
           {this.renderTable()}
-  
+          <Modal
+            title="Add New Participants"
+            visible={this.state.addParticipantModalVisible}
+            footer={null}
+            onCancel={this.toggleAddParticipantModal}
+            style={{width: '80%'}}
+          >
+            <Table
+              columns={this.columns}
+              dataSource={this.enrichDataWithRowKeys(this.state.allUsers)}
+              rowSelection={this.addParticipantRowSelection}
+            />
+            <Button onClick={this.toggleAddParticipantModal}>Cancel</Button>
+            <Button onClick={this.handleAddParticipant}>Add Participants</Button>
+          </Modal>
         </div>
       );
     }

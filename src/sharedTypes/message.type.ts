@@ -25,7 +25,7 @@ export type MediumType =
   |'APP';
 
 export interface IMessage {
-  content: string;
+  message: string;
   messageType: MessageType;
   mediumType: MediumType;
   id?: string;
@@ -34,7 +34,7 @@ export interface IMessage {
 }
 
 export interface IMessageAPI {
-  content: string;
+  message: string;
   messageType: string;
   mediumType: string;
   id: string;
@@ -43,9 +43,9 @@ export interface IMessageAPI {
 }
 
 export const convertMessage = (rawData: IMessageAPI): IMessage => {
-  const { content, messageType, mediumType, id, createdAt, updatedAt } = rawData;
+  const { message, messageType, mediumType, id, createdAt, updatedAt } = rawData;
   return {
-    content,
+    message,
     messageType: messageType as MessageType,
     mediumType: mediumType as MediumType,
     id,

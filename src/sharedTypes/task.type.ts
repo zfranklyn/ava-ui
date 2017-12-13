@@ -1,5 +1,5 @@
-import { 
-  MediumType
+import {
+  MediumType,
 } from './';
 export const TASK_TYPE = {
   CUSTOM_MESSAGE: 'CUSTOM_MESSAGE',
@@ -18,6 +18,7 @@ export interface ITask {
   type: TaskType;
   message: string;
   description: string;
+  subject?: string;
   mediumType: MediumType;
   completed: boolean;
   id?: string;
@@ -31,6 +32,7 @@ export interface ITaskAPI {
   type: string;
   message: string;
   description: string;
+  subject?: string;
   mediumType: string;
   id: string;
   completed: boolean;
