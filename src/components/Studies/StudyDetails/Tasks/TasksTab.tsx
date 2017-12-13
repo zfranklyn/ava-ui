@@ -56,8 +56,8 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     },
     {
       title: 'Task Type',
-      key: 'type',
-      dataIndex: 'type',
+      key: 'messageType',
+      dataIndex: 'messageType',
     },
     {
       title: 'Description',
@@ -115,7 +115,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
       // find subtasks
       const currentTaskId = task.id;
       const subTasks = data.filter((subTask: ITask) => subTask.ParentSurveyTaskId === currentTaskId);
-      return (task.type === 'SURVEY') ? Object.assign({}, task, {children: subTasks}) : task;
+      return (task.messageType === 'SURVEY') ? Object.assign({}, task, {children: subTasks}) : task;
     });
     return mainTasks;
   }
