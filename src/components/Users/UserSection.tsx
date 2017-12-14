@@ -7,10 +7,17 @@ import {
 import {
   Table,
   Layout,
+  Card,
+  Button,
+  Input,
+  Modal,
+  Icon,
 } from 'antd';
+const Search = Input.Search;
 const { Content } = Layout;
 const PageHeader = require('ant-design-pro/lib/PageHeader');
 import { Spinner } from '@blueprintjs/core';
+import NewUserModal from './NewUserModal';
 
 export interface IUserSearchConditions {
   searchTerm: string;
@@ -18,6 +25,7 @@ export interface IUserSearchConditions {
 
 interface IUserSectionState {
   users: IUser[];
+  newUserModalVisible: boolean;
 }
 
 interface IUserSectionProps {
@@ -30,6 +38,7 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
     super(props);
     this.state = {
       users: [],
+      newUserModalVisible: false,
     };
   }
 
@@ -92,6 +101,12 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
     console.log(userId);
   }
 
+  private toggleNewUserModal = () => {
+    this.setState({
+      newUserModalVisible: !this.state.newUserModalVisible,
+    });
+  }
+
   private rowSelection = {
     onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -128,9 +143,39 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
             <PageHeader
               title="Users"
             />
-            <Content style={{margin: 24, background: '#fff', padding: 24}}>
+            <Content style={{margin: '24px 16px'}}>
+              <Card
+                title={
+                  <div>
+                    <Search
+                      placeholder="Search Users..."
+                      style={{width: 300}}
+                    />
+                    <Button
+                      onClick={this.toggleNewUserModal}
+                      type="dashed"
+                      style={{float: 'right'}}
+                    >
+                      <Icon type="plus" />Add New User
+                    </Button>
+                  </div>
+                }
+              >
               {UserTable}
+              </Card>
             </Content>
+            <Modal
+              title="Add User"
+              maskClosable={false}
+              footer={null}
+              visible={this.state.newUserModalVisible}
+              onCancel={this.toggleNewUserModal}
+            >
+              <NewUserModal
+                updateUsers={this.updateUsers}
+                toggleNewUserModal={this.toggleNewUserModal}
+              />
+            </Modal>
           </Layout>
         );
       }

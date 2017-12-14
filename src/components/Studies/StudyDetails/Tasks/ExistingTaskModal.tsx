@@ -75,7 +75,7 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
   private handleChangeTaskType = (val: string) => {
     const task = this.state.task;
     if (task) {
-      task.type = val as TaskType;
+      task.taskType = val as TaskType;
       this.setState({
         task,
         modified: true,
@@ -160,12 +160,12 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
       return (
         <div>
           <form onSubmit={this.handleSubmit}>
-            <div className="pt-dialog-body">
-                <label className="pt-label">
+            <div>
+                <label>
                   Task Type
-                  <div className="pt-select">
+                  <div>
                     <Select
-                      defaultValue={this.state.task.type}
+                      defaultValue={this.state.task.taskType}
                       onChange={this.handleChangeTaskType}
                     >
                       <Option value="SURVEY">Survey</Option>
@@ -174,9 +174,17 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
                     </Select>
                   </div>
                 </label>            
-                <label className="pt-label">
+                <label>
+                  Subject
+                  <Input
+                    name="subject"
+                    onChange={this.handleChange}
+                    value={this.state.task.subject}
+                  />
+                </label>
+                <label>
                   Message Medium
-                  <div className="pt-select">
+                  <div>
                     <Select
                       defaultValue={this.state.task.mediumType}
                       onChange={this.handleChangeMediumType}
@@ -187,21 +195,19 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
                   </div>
                 </label>
 
-                <label className="pt-label">
+                <label>
                   Description
                   <TextArea
                     name="description"
-                    className="pt-input pt-fill"
                     onChange={this.handleChange}
                     defaultValue={this.state.task.description}
                   />
                 </label>
 
-                <label className="pt-label">
+                <label>
                   Message
-                  <textarea
+                  <TextArea
                     name="message"
-                    className="pt-input pt-fill"
                     onChange={this.handleChange}
                     defaultValue={this.state.task.message}
                   />
@@ -214,7 +220,7 @@ class ExstingTaskModal extends React.Component<IExstingTaskModalProps, IExstingT
                   onOk={this.handleChangeTaskTime}
                 />
               </div>
-            <div className="pt-dialog-footer">
+            <div>
               <Button onClick={() => this.props.toggleExistingTaskModal()}>
                 Cancel
               </Button>

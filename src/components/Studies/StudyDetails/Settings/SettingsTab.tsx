@@ -154,22 +154,20 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
     return (
     <div>
       <form onSubmit={this.handleSubmitForm}>
-        <label className="pt-label">
+        <label>
           Study Title
           <Input
             name="title"
-            className="pt-input"
             type="text"
             value={this.state.title}
             style={{width: '100%'}}
             onChange={this.handleChangeTitle}
           />
         </label>
-        <label className="pt-label">
+        <label>
           Study Description 
           <TextArea
             name="description"
-            className="pt-input"
             value={this.state.description}
             style={{width: '100%'}}
             onChange={this.handleChangeDescription}
@@ -177,14 +175,13 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
         </label>
 
         <div className="metadata-section">
-          <label className="pt-label">
+          <label>
             Metadata
           </label>
           <InputGroup compact={true}>
             <Input
               value={this.state.key}
               onChange={this.handleChangeKey}
-              className="pt-input"
               type="text"
               placeholder="Key"
               style={{maxWidth: '200px'}}
@@ -192,7 +189,6 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
             <Input
               value={this.state.value}
               onChange={this.handleChangeValue}
-              className="pt-input"
               type="text"
               placeholder="Value"
               style={{maxWidth: '200px'}}

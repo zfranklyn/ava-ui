@@ -14,6 +14,7 @@ const Tab = Tabs.TabPane;
 const { TextArea } = Input;
 import {
   // convertTask,
+  TaskType,
 } from './../../../../sharedTypes';
 import ReminderSection from './ReminderSection';
 import ScheduleSection from './ScheduleSection';
@@ -30,7 +31,8 @@ export interface INewTaskModalProps {
 export interface INewTaskModalState {
   task: any;
   reminders: {
-    type: string,
+    taskType: TaskType,
+    subject: string;
     message: string,
     description: string,
     mediumType: string,
@@ -50,12 +52,14 @@ export interface INewTaskModalState {
 }
 
 interface INewTask {
-  type: string;
+  taskType: TaskType;
+  subject: string;
   message: string;
   description: string;
   mediumType: string;
   reminders: {
-    type: string,
+    taskType: TaskType,
+    subject: string;
     message: string,
     description: string,
     mediumType: string,
@@ -71,7 +75,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
     super(props);
     this.state = {
       task: {
-        type: 'SURVEY',
+        taskType: 'SURVEY',
         mediumType: 'SMS',
         scheduledTime: new Date(),
       },
@@ -108,11 +112,12 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
       let currentTime = scheduledTime;
 
       while (moment(currentTime).isBefore(endRepeatDate)) {
-        const { type, message, description, mediumType, } = this.state.task;
+        const { taskType, subject, message, description, mediumType, } = this.state.task;
         const { reminders } = this.state;
         let newTaskParams: INewTask = {
-          type,
+          taskType: taskType as TaskType,
           message,
+          subject,
           description,
           mediumType,
           reminders,
@@ -132,10 +137,11 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
       let currentTime = scheduledTime;
 
       while (moment(currentTime).isBefore(endRepeatDate)) {
-        const { type, message, description, mediumType, } = this.state.task;
+        const { taskType, subject, message, description, mediumType, } = this.state.task;
         const { reminders } = this.state;
         let newTaskParams: INewTask = {
-          type,
+          taskType: taskType as TaskType,
+          subject,
           message,
           description,
           mediumType,
@@ -151,9 +157,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
         currentTime = moment(currentTime).add(everyN, 'weeks');
       }
     } else {
-      const { type, message, description, mediumType, } = this.state.task;
+      const { taskType, message, description, mediumType, subject, } = this.state.task;
       const { reminders } = this.state;
-      await this.postTask({type, message, description, mediumType, reminders}, scheduledTime);
+      await this.postTask({taskType, message, description, mediumType, reminders, subject, }, scheduledTime);
     }
 
     this.props.toggleNewTaskModal();
@@ -163,11 +169,12 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
 
   private postTask = (params: any, scheduledTime: Date) => {
 
-    const { type, message, description, mediumType, reminders, } = params;
+    const { taskType, subject, message, description, mediumType, reminders, } = params;
 
     return axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
       scheduledTime,
-      type,
+      subject,
+      taskType,
       message,
       description,
       mediumType,
@@ -188,7 +195,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
   
               return axios.post(`http://localhost:8080/task/study/${this.props.studyId}`, {
                 scheduledTime: reminderTime,
-                type: 'REMINDER',
+                taskType: 'REMINDER',
                 message: reminder.message,
                 description: reminder.description,
                 mediumType: reminder.mediumType,
@@ -277,7 +284,8 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
       days: 0,
       minutes: 0,
       hours: 0,
-      type: 'REMINDER',
+      subject: '',
+      taskType: 'REMINDER' as TaskType,
       message: '',
       description: '',
       mediumType: 'SMS',
@@ -333,9 +341,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
               tab="Study Information"
             >
               <div>
-                <label className="pt-label">
+                <label>
                   Task Type
-                  <div className="pt-select">
+                  <div>
                     <Select
                       defaultValue={this.state.task.type}
                       onChange={(val) => this.handleChangeTaskDetails(val, 'type')}
@@ -345,9 +353,9 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
                     </Select>
                   </div>
                 </label>            
-                <label className="pt-label">
+                <label>
                   Message Medium
-                  <div className="pt-select">
+                  <div>
                     <Select
                       defaultValue={this.state.task.mediumType}
                       onChange={(val) => this.handleChangeTaskDetails(val, 'mediumType')}
@@ -358,7 +366,16 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
                   </div>
                 </label>
 
-                <label className="pt-label">
+                <label>
+                  Subject
+                  <Input
+                    name="subject"
+                    onChange={this.handleChangeTaskDetails}
+                    value={this.state.task.subject}
+                  />
+                </label>
+
+                <label>
                   Description
                   <TextArea
                     name="description"
@@ -367,14 +384,14 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
                   />
                 </label>
 
-                <label className="pt-label">
+                <label>
                   Message
                   <TextArea
                     name="message"
                     onChange={this.handleChangeTaskDetails}
                     defaultValue={this.state.task.message}
                   />
-                  <span className="pt-text-muted">
+                  <span>
                     {this.state.task.message ? this.state.task.message.length : '0'}/160
                   </span>
                 </label>
@@ -392,7 +409,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
             <Tab
               tab="Reminders"
               key="2"
-              disabled={!(this.state.task && this.state.task.type === 'SURVEY')}
+              disabled={!(this.state.task && this.state.task.taskType === 'SURVEY')}
             >
               <div>
                 <ReminderSection

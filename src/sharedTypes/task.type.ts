@@ -15,7 +15,7 @@ export type TaskType =
 
 export interface ITask {
   scheduledTime: Date;
-  type: TaskType;
+  taskType: TaskType;
   message: string;
   description: string;
   subject?: string;
@@ -29,7 +29,7 @@ export interface ITask {
 
 export interface ITaskAPI {
   scheduledTime: string;
-  type: string;
+  taskType: string;
   message: string;
   description: string;
   subject?: string;
@@ -44,24 +44,26 @@ export interface ITaskAPI {
 }
 
 export const convertTask = (rawData: ITaskAPI): ITask => {
-  const { 
-    scheduledTime, 
-    type, 
-    message, 
-    mediumType, 
-    description, 
-    id, 
-    createdAt, 
-    updatedAt, 
+  const {
+    scheduledTime,
+    taskType,
+    subject,
+    message,
+    mediumType,
+    description,
+    id,
+    createdAt,
+    updatedAt,
     completed,
     ParentSurveyTaskId,
   } = rawData;
   return {
     scheduledTime: new Date(scheduledTime),
-    type: type as TaskType,
+    taskType: taskType as TaskType,
     id,
     completed,
     mediumType: mediumType as MediumType,
+    subject,
     message, description,
     createdAt: new Date(createdAt),
     updatedAt: new Date(updatedAt),

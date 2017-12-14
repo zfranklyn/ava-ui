@@ -8,7 +8,6 @@ import {
   Table,
   Badge,
 } from 'antd';
-import './TasksTab.css';
 import ExistingTaskModal from './ExistingTaskModal';
 import NewTaskModal from './NewTaskModal';
 import {
@@ -17,6 +16,7 @@ import {
   convertTask,
 } from './../../../../sharedTypes';
 import * as moment from 'moment';
+import axios from 'axios';
 
 export interface ITasksTabProps {
   studyId: string;
@@ -28,6 +28,7 @@ export interface ITasksTabState {
   newTaskModalOpen: boolean;
   existingTaskModalOpen: boolean;
   currentTaskId: string | null;
+  selectedTasks: ITask[];
 }
 
 class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
@@ -40,6 +41,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
       newTaskModalOpen: false,
       existingTaskModalOpen: false,
       currentTaskId: null,
+      selectedTasks: [],
     };
   }
 
@@ -56,8 +58,8 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     },
     {
       title: 'Task Type',
-      key: 'messageType',
-      dataIndex: 'messageType',
+      key: 'taskType',
+      dataIndex: 'taskType',
     },
     {
       title: 'Description',
@@ -83,7 +85,9 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
   private rowSelection = {
     onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      this.setState({
+        selectedTasks: selectedRows,
+      });
     },
   };
 
@@ -109,19 +113,19 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
   private nestify = (data: ITask[]) => {
     // extract main tasks
-    let mainTasks = data.filter((task: ITask) => task.type !== 'REMINDER');
+    let mainTasks = data.filter((task: ITask) => task.taskType !== 'REMINDER');
     // for each main task, find reminders and nest them
     mainTasks = mainTasks.map((task: ITask) => {
       // find subtasks
       const currentTaskId = task.id;
       const subTasks = data.filter((subTask: ITask) => subTask.ParentSurveyTaskId === currentTaskId);
-      return (task.messageType === 'SURVEY') ? Object.assign({}, task, {children: subTasks}) : task;
+      return (task.taskType === 'SURVEY') ? Object.assign({}, task, {children: subTasks}) : task;
     });
     return mainTasks;
   }
 
   private cleanData = (data: ITask[]) => {
-    console.log(data);
+    // console.log(data);
     const cleanedData = data.map((task: ITask) => {
       const newTask = {};
       const keys = Object.keys(task);
@@ -150,7 +154,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     
       return newTask;
     });
-    console.log(cleanedData);
+    // console.log(cleanedData);
     return cleanedData;
   }
 
@@ -183,6 +187,15 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     this.setState({
       currentTaskId: taskId,
       existingTaskModalOpen: !existingTaskModalOpen,
+    });
+  }
+
+  private deleteTasks = () => {
+    Promise.all(this.state.selectedTasks.map((task: ITask) => {
+      return axios.delete(`http://localhost:8080/task/${task.id}`);
+    }))
+    .then((d) => {
+      this.updateTasksData();
     });
   }
 
@@ -220,6 +233,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     return (
       <div className="tasks-tab">
         <Button onClick={() => this.toggleNewTaskModal()}>Create New Task</Button>
+        <Button type="danger" onClick={this.deleteTasks}>Delete Tasks</Button>
         {TaskTable}
         
         <Modal

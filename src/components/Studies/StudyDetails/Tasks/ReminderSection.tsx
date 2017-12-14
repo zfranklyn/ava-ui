@@ -7,12 +7,14 @@ import {
   Select,
 } from 'antd';
 import {
+  TaskType,
 } from './../../../../sharedTypes';
 const { TextArea } = Input;
 const Option = Select.Option;
 export interface IReminderSectionProps {
   reminders: {
-    type: string,
+    taskType: TaskType,
+    subject: string;
     message: string,
     description: string,
     mediumType: string,
@@ -56,7 +58,7 @@ class ReminderSection extends React.Component<IReminderSectionProps, IReminderSe
                   </div>
                 </label>
 
-                <label className="pt-label">
+                <label>
                   Description
                   <TextArea
                     name="description"
@@ -65,7 +67,15 @@ class ReminderSection extends React.Component<IReminderSectionProps, IReminderSe
                   />
                 </label>
 
-                <label className="pt-label">
+                <label>
+                  Subject
+                  <Input
+                    name="subject"
+                    onChange={(e) => this.props.handleChangeReminder(e, index)}
+                    value={this.props.reminders[index].subject}
+                  />
+                </label>
+                <label>
                   Message
                   <TextArea
                     name="message"
