@@ -1,14 +1,16 @@
 import * as React from 'react';
-import {
-  
-} from '@blueprintjs/core';
 import 'ant-design-pro/dist/ant-design-pro.css';
 import 'antd/dist/antd.css';
 const Charts = require('ant-design-pro/lib/Charts');
-import { Timeline, Card } from 'antd';
-import { ITaskAPI } from './../../../../sharedTypes';
-// import axios from 'axios';
-// import * as moment from 'moment';
+import {
+  Timeline,
+  Card,
+  Tag,
+} from 'antd';
+import { ITaskAPI, ITask, convertTask, } from './../../../../sharedTypes';
+import axios from 'axios';
+import * as moment from 'moment';
+import * as _ from 'lodash';
 
 export interface IOverviewTabProps {
   studyId: string;
@@ -17,6 +19,7 @@ export interface IOverviewTabProps {
 export interface IOverviewTabState {
   currentResponseRate: number;
   averageResponseRate: number;
+  recentTasks: ITask[];
 }
 
 class OverviewTab extends React.Component<IOverviewTabProps, IOverviewTabState> {
@@ -25,17 +28,22 @@ class OverviewTab extends React.Component<IOverviewTabProps, IOverviewTabState> 
     super(props);
     this.state = {
       currentResponseRate: 68,
-      averageResponseRate: 75
+      averageResponseRate: 75,
+      recentTasks: [],
     };
   }
 
-  private renderTimeline = (recentTasks: ITaskAPI[]) => {
+  private renderTimeline = (recentTasks: ITask[]) => {
     if (recentTasks.length) {
       return (
         <Timeline>
-          {recentTasks.map((task: ITaskAPI, index: number) => {
+          {recentTasks.map((task: ITask, index: number) => {
             return (
-              <Timeline.Item key={index} color="green">{task.description}</Timeline.Item>
+              <Timeline.Item key={index} color={(task.completed) ? 'green' : 'gray'}>
+                {task.description}
+                <Tag style={{marginLeft: 5}}>{moment(task.scheduledTime).fromNow()}</Tag>
+                <Tag>{task.mediumType}</Tag>
+              </Timeline.Item>
             );
           })}
         </Timeline>
@@ -45,18 +53,26 @@ class OverviewTab extends React.Component<IOverviewTabProps, IOverviewTabState> 
 
       return (
         <Timeline>
-          <Timeline.Item color="green">SMS: Survey to Corbett Prep</Timeline.Item>
-          <Timeline.Item color="green">SMS: Reminder to Corbett Prep</Timeline.Item>
-          <Timeline.Item color="gray">SMS: Reminder to Corbett Prep</Timeline.Item>
-          <Timeline.Item color="gray">SMS: Reminder to Corbett Prep</Timeline.Item>
-          <Timeline.Item color="gray">SMS: Reminder to Corbett Prep</Timeline.Item>
+          <Timeline.Item color="gray">No Tasks</Timeline.Item>
         </Timeline>
       );
-
-      // return (
-      //   <div>No Recent Tasks</div>
-      // );
     }
+  }
+
+  private updateTimeline = () => {
+    axios.get(`http://localhost:8080/study/${this.props.studyId}/recentTasks`)
+    .then(res => res.data)
+    .then((data: ITaskAPI[]) => {
+      const recentTasks = _.sortBy(data.map(convertTask), d => d.scheduledTime);
+      this.setState({
+        recentTasks,
+      });
+    })
+    .catch(console.log);
+  }
+
+  componentDidMount() {
+    this.updateTimeline();
   }
 
   public render() {
@@ -74,7 +90,7 @@ class OverviewTab extends React.Component<IOverviewTabProps, IOverviewTabState> 
         </Charts.ChartCard>
 
         <Card title="Recent Tasks">
-          {this.renderTimeline([])}
+          {this.renderTimeline(this.state.recentTasks)}
         </Card>
 
       </div>

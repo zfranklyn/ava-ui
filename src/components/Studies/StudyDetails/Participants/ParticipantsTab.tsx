@@ -4,6 +4,9 @@ import {
   Spin,
   Table,
   Modal,
+  Menu,
+  Dropdown,
+  Icon,
 } from 'antd';
 import {
   IUserAPI,
@@ -22,6 +25,7 @@ export interface IParticipantsTabState {
   loading: boolean;
   addParticipantModalVisible: boolean;
   potentialParticipantsToAdd: IUserAPI[];
+  selectedParticipants: IUserAPI[];
 }
 
 class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipantsTabState> {
@@ -34,6 +38,7 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
       allUsers: [],
       potentialParticipantsToAdd: [],
       addParticipantModalVisible: false,
+      selectedParticipants: [],
     };
   }
 
@@ -63,6 +68,7 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
     {
       title: 'First Name',
       dataIndex: 'firstName',
+      width: '130px',
       key: 'firstName',
     },
     {
@@ -84,7 +90,9 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
 
   private rowSelection = {
     onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      this.setState({
+        selectedParticipants: selectedRows,
+      });
     },
   };
 
@@ -132,6 +140,26 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
     });
   }
 
+  private handleRemoveParticipants = () => {
+    console.log('removing participants');
+    this.state.selectedParticipants.map((user: IUserAPI) => {
+      axios.post(`http://localhost:8080/actions/removeUserFromStudy?userId=${user.id}&studyId=${this.props.studyId}`)
+      .then(() =>  {
+        this.fetchUserData();
+      });
+    });
+  }
+
+  private handleActionMenuClick = (e: any) => {
+    switch (e.key) {
+      case 'delete':
+        this.handleRemoveParticipants();
+        break;
+      default:
+        break;
+    }
+  }
+
   private getUserData = () => {
     axios.get(`http://localhost:8080/users`)
     .then(res => res.data)
@@ -149,6 +177,17 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
       return (
         <div>
           <Button onClick={this.toggleAddParticipantModal}>Add Participants</Button>
+          <Dropdown
+            overlay={
+              <Menu onClick={this.handleActionMenuClick}>
+                <Menu.Item key="delete">
+                  Delete
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <Button type="primary">Actions <Icon type="down"/></Button>
+          </Dropdown>
           {this.renderTable()}
           <Modal
             title="Add New Participants"

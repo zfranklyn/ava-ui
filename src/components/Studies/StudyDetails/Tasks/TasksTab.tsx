@@ -47,14 +47,14 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
   private columns = [
     {
-      title: 'Scheduled Time',
-      key: 'scheduledTime',
-      dataIndex: 'scheduledTime',
-    },
-    {
       title: 'Status',
       key: 'completed',
       dataIndex: 'completed',
+    },    
+    {
+      title: 'Scheduled Time',
+      key: 'scheduledTime',
+      dataIndex: 'scheduledTime',
     },
     {
       title: 'Task Type',

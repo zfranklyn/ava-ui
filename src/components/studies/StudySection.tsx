@@ -21,7 +21,6 @@ const PageHeader = require('ant-design-pro/lib/PageHeader');
 import 'ant-design-pro/dist/ant-design-pro.css';
 const { Content } = Layout;
 import NewStudyModal from './NewStudyModal/NewStudyModal';
-import './StudySection.css';
 import {
   IStudy,
   IStudyAPI,

@@ -172,7 +172,6 @@ class NewStudyModal extends React.Component<INewStudyModalProps, INewStudyModalS
             <Input
               value={this.state.key}
               onChange={this.handleChangeKey}
-              className="pt-input"
               type="text"
               placeholder="Key"
               style={{maxWidth: '200px'}}
@@ -180,7 +179,6 @@ class NewStudyModal extends React.Component<INewStudyModalProps, INewStudyModalS
               <Input
                 value={this.state.value}
                 onChange={this.handleChangeValue}
-                className="pt-input"
                 type="text"
                 placeholder="Value"
                 style={{maxWidth: '200px'}}

@@ -345,7 +345,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
                   Task Type
                   <div>
                     <Select
-                      defaultValue={this.state.task.type}
+                      defaultValue="SURVEY"
                       onChange={(val) => this.handleChangeTaskDetails(val, 'type')}
                     >
                       <Option value="SURVEY">Survey</Option>
@@ -409,7 +409,7 @@ class NewTaskModal extends React.Component<INewTaskModalProps, INewTaskModalStat
             <Tab
               tab="Reminders"
               key="2"
-              disabled={!(this.state.task && this.state.task.taskType === 'SURVEY')}
+              disabled={this.state.task.taskType !== ('SURVEY' as TaskType)}
             >
               <div>
                 <ReminderSection
