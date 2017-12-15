@@ -4,9 +4,13 @@ import {
 import {
   Modal,
   Button,
-  Spin,
   Table,
   Badge,
+  Dropdown,
+  Menu,
+  Col,
+  Row,
+  Icon,
 } from 'antd';
 import ExistingTaskModal from './ExistingTaskModal';
 import NewTaskModal from './NewTaskModal';
@@ -47,14 +51,14 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
   private columns = [
     {
-      title: 'Status',
-      key: 'completed',
-      dataIndex: 'completed',
-    },    
-    {
       title: 'Scheduled Time',
       key: 'scheduledTime',
       dataIndex: 'scheduledTime',
+    },
+    {
+      title: 'Status',
+      key: 'completed',
+      dataIndex: 'completed',
     },
     {
       title: 'Task Type',
@@ -119,7 +123,7 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
       // find subtasks
       const currentTaskId = task.id;
       const subTasks = data.filter((subTask: ITask) => subTask.ParentSurveyTaskId === currentTaskId);
-      return (task.taskType === 'SURVEY') ? Object.assign({}, task, {children: subTasks}) : task;
+      return (task.taskType === 'SURVEY' && subTasks.length) ? Object.assign({}, task, {children: subTasks}) : task;
     });
     return mainTasks;
   }
@@ -133,13 +137,13 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
       keys.map(keyName => {
         switch (keyName) {
           case 'scheduledTime':
-            newTask[keyName] = `${moment(task[keyName]).format('hh:mm A MMM Do, YYYY')}`;
+            newTask[keyName] = `${moment(task[keyName]).format('HH:mm:ss dd M/D/YY')}`;
             break;
           case 'createdAt':
-            newTask[keyName] = `${moment(task[keyName]).format('hh:mm A MMM Do, YYYY')}`;
+            newTask[keyName] = `${moment(task[keyName]).format('HH:mm:ss dd M/D/YY')}`;
             break;
           case 'updatedAt':
-            newTask[keyName] = `${moment(task[keyName]).format('hh:mm A MMM Do, YYYY')}`;
+            newTask[keyName] = `${moment(task[keyName]).format('HH:mm:ss dd M/D/YY')}`;
             break;
           case 'completed':
             newTask[keyName] = (task[keyName] ? 
@@ -199,14 +203,20 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
     });
   }
 
+  private handleActionMenuClick = (e: any) => {
+    switch (e.key) {
+      case 'delete':
+        this.deleteTasks();
+        break;
+      default:
+        break;
+    }
+  }
+
   public render() {
 
-    let TaskTable = (this.state.loadingTasks ? <Spin/> : <div>No Tasks</div>);
+    let TaskTable = this.renderTaskTable(this.state.tasks);
     let ExistingTaskModalVar = <div>No Task Specified</div>;
-
-    if (this.state.tasks.length) {
-      TaskTable = this.renderTaskTable(this.state.tasks);
-    }
 
     // Only renders if there is a task defined
     if (this.state.currentTaskId) {
@@ -232,8 +242,23 @@ class TasksTab extends React.Component<ITasksTabProps, ITasksTabState> {
 
     return (
       <div className="tasks-tab">
-        <Button onClick={() => this.toggleNewTaskModal()}>Create New Task</Button>
-        <Button type="danger" onClick={this.deleteTasks}>Delete Tasks</Button>
+        <Row style={{marginBottom: 12}}>
+          <Col span={12}>
+            <Button type="primary" onClick={() => this.toggleNewTaskModal()}>Create New Task</Button>
+          </Col>
+          <Col span={12} style={{textAlign: 'right'}}>
+              <Dropdown
+                overlay={
+                  <Menu onClick={this.handleActionMenuClick}>
+                    <Menu.Item key="delete">
+                      Delete Tasks
+                    </Menu.Item>
+                  </Menu>}
+              >
+                <Button>Actions <Icon type="down"/></Button>
+              </Dropdown>
+            </Col>
+        </Row>
         {TaskTable}
         
         <Modal

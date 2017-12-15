@@ -7,6 +7,8 @@ import {
   Menu,
   Dropdown,
   Icon,
+  Row,
+  Col,
 } from 'antd';
 import {
   IUserAPI,
@@ -141,13 +143,13 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
   }
 
   private handleRemoveParticipants = () => {
-    console.log('removing participants');
-    this.state.selectedParticipants.map((user: IUserAPI) => {
-      axios.post(`http://localhost:8080/actions/removeUserFromStudy?userId=${user.id}&studyId=${this.props.studyId}`)
-      .then(() =>  {
+    Promise.all(this.state.selectedParticipants.map((user: IUserAPI) => {
+      return axios
+        .post(`http://localhost:8080/actions/removeUserFromStudy?userId=${user.id}&studyId=${this.props.studyId}`);
+      }))
+      .then((d) => {
         this.fetchUserData();
       });
-    });
   }
 
   private handleActionMenuClick = (e: any) => {
@@ -176,18 +178,23 @@ class ParticipantsTab extends React.Component<IParticipantsTabProps, IParticipan
     } else {
       return (
         <div>
-          <Button onClick={this.toggleAddParticipantModal}>Add Participants</Button>
-          <Dropdown
-            overlay={
-              <Menu onClick={this.handleActionMenuClick}>
-                <Menu.Item key="delete">
-                  Delete
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button type="primary">Actions <Icon type="down"/></Button>
-          </Dropdown>
+          <Row style={{marginBottom: 12}}>
+            <Col span={12}>
+              <Button type="primary" onClick={this.toggleAddParticipantModal}>Add Participants</Button>
+            </Col>
+            <Col span={12} style={{textAlign: 'right'}}>
+              <Dropdown
+                overlay={
+                  <Menu onClick={this.handleActionMenuClick}>
+                    <Menu.Item key="delete">
+                      Delete
+                    </Menu.Item>
+                  </Menu>}
+              >
+                <Button>Actions <Icon type="down"/></Button>
+              </Dropdown>
+            </Col>
+          </Row>
           {this.renderTable()}
           <Modal
             title="Add New Participants"

@@ -1,8 +1,6 @@
 import * as React from 'react';
 import {
   IUser,
-  IUserAPI,
-  convertUser,
 } from './../../sharedTypes';
 import {
   Table,
@@ -12,12 +10,16 @@ import {
   Input,
   Modal,
   Icon,
+  Col,
+  Row,
 } from 'antd';
 const Search = Input.Search;
 const { Content } = Layout;
 const PageHeader = require('ant-design-pro/lib/PageHeader');
 import { Spinner } from '@blueprintjs/core';
 import NewUserModal from './NewUserModal';
+import UserDetails from './UserDetails';
+import axios from 'axios';
 
 export interface IUserSearchConditions {
   searchTerm: string;
@@ -26,6 +28,9 @@ export interface IUserSearchConditions {
 interface IUserSectionState {
   users: IUser[];
   newUserModalVisible: boolean;
+  userDetailsModalVisible: boolean;
+  userId: string;
+  selectedUsers: any[];
 }
 
 interface IUserSectionProps {
@@ -39,6 +44,9 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
     this.state = {
       users: [],
       newUserModalVisible: false,
+      userDetailsModalVisible: false,
+      userId: '',
+      selectedUsers: [],
     };
   }
 
@@ -87,18 +95,20 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
   private updateUsers = () => {
     fetch(`http://localhost:8080/users`)
     .then((res: Response) => res.json())
-    .then((studies: IUserAPI[]) => {
+    .then((users: any[]) => {
       // Convert API format into JS object format:
-      const convertedUsers = studies.map(convertUser);
       return this.setState({
-        users: convertedUsers,
+        users,
       });
     })
     .catch(console.log);
   }
 
   private toggleExistingUserModal = (userId: string) => {
-    console.log(userId);
+    this.setState({
+      userDetailsModalVisible: true,
+      userId,
+    });
   }
 
   private toggleNewUserModal = () => {
@@ -109,7 +119,9 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
 
   private rowSelection = {
     onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      this.setState({
+        selectedUsers: selectedRows,
+      });
     },
   };
 
@@ -130,6 +142,25 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
     );
   }
 
+  private toggleUserDetailsModal = () => {
+    this.setState({
+      userDetailsModalVisible: !this.state.userDetailsModalVisible,
+    });
+  }
+
+  private handleDeleteUsers = () => {
+    Promise.all(this.state.selectedUsers.map(user => {
+      return axios.delete(`http://localhost:8080/user/${user.id}`);
+    }))
+    .then(() => {
+      this.updateUsers();
+    });
+  }
+
+  private handleSubmitUserDetailsModal = () => {
+    console.log(`handleSubmitUserDetailsModal`);
+  }
+
   public render() {
     
         let UserTable = <Spinner/>;
@@ -146,19 +177,28 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
             <Content style={{margin: '24px 16px'}}>
               <Card
                 title={
-                  <div>
-                    <Search
-                      placeholder="Search Users..."
-                      style={{width: 300}}
-                    />
-                    <Button
-                      onClick={this.toggleNewUserModal}
-                      type="dashed"
-                      style={{float: 'right'}}
-                    >
-                      <Icon type="plus" />Add New User
-                    </Button>
-                  </div>
+                  <Row>
+                    <Col span={12}>
+                      <Search
+                        placeholder="Search Users..."
+                        style={{width: 300}}
+                      />
+                    </Col>
+                    <Col span={12} style={{textAlign: 'right'}}>
+                      <Button
+                        onClick={this.handleDeleteUsers}
+                        type="danger"
+                      >
+                        Delete Selected Users
+                      </Button>
+                      <Button
+                        onClick={this.toggleNewUserModal}
+                        type="dashed"
+                      >
+                        <Icon type="plus" />Add New User
+                      </Button>
+                    </Col>
+                  </Row>
                 }
               >
               {UserTable}
@@ -174,6 +214,20 @@ class UserSection extends React.Component<IUserSectionProps, IUserSectionState> 
               <NewUserModal
                 updateUsers={this.updateUsers}
                 toggleNewUserModal={this.toggleNewUserModal}
+              />
+            </Modal>
+            <Modal
+              title="User Details"
+              maskClosable={false}
+              footer={null}
+              visible={this.state.userDetailsModalVisible}
+              onCancel={this.toggleUserDetailsModal}
+            >
+              <UserDetails
+                userId={this.state.userId}
+                onCancel={this.toggleUserDetailsModal}
+                handleSubmit={this.handleSubmitUserDetailsModal}
+                updateUsers={this.updateUsers}
               />
             </Modal>
           </Layout>

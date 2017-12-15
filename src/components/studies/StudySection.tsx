@@ -114,7 +114,7 @@ class StudySection extends React.Component<IStudySectionProps, IStudySectionStat
                     </Col>
                     <Col lg={{span: 12}} md={{span: 24}}>
                       <label>
-                        Study Progress
+                        Average Response Rate
                         <Progress percent={57} size="small" status="active" />
                       </label>
                     </Col>

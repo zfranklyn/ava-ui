@@ -12,14 +12,32 @@ import {
 const { Sider, Header, Content, } = Layout;
 import 'antd/dist/antd.css';
 
-// import './AppContainer.css';
-
-// import NavbarComponent from './Navbar/NavbarComponent';
 import StudySection from './Studies/StudySection';
 import StudyDetails from './Studies/StudyDetails/StudyDetails';
 import UserSection from './Users/UserSection';
 
-class AppContainer extends React.Component<{}, {}> {
+interface IAppContainerProps {
+
+}
+
+interface IAppContainerState {
+  collapsedMenu: boolean;
+}
+
+class AppContainer extends React.Component<IAppContainerProps, IAppContainerState> {
+  constructor(props: IAppContainerProps) {
+    super(props);
+    this.state = {
+      collapsedMenu: true,
+    };
+  }
+
+  // private toggleMenuCollapse = () => {
+  //   this.setState({
+  //     collapsedMenu: !this.state.collapsedMenu,
+  //   });
+  // }
+
   render() {
     return (
       <Router>
@@ -27,11 +45,18 @@ class AppContainer extends React.Component<{}, {}> {
           <Sider
             trigger={null}
             collapsible={true}
-            collapsed={true}
+            collapsed={this.state.collapsedMenu}
             style={{background: '#fff'}}
           >
             <Link to="/studies">
-              <div className="sidebar-logo"/>
+              <div
+                style={{
+                  height: (this.state.collapsedMenu ? '80px' : '160px'),
+                  width: '100%',
+                  background: `url('./logo.svg') no-repeat 50%`,
+                  backgroundSize: '60%',
+                }}
+              />
             </Link>
             <Menu
               mode="inline"
@@ -62,7 +87,11 @@ class AppContainer extends React.Component<{}, {}> {
           </Sider>
           <Layout>
             <Header style={STYLE.HEADER}>
-              Header
+              {/* <Icon
+                type={this.state.collapsedMenu ? 'menu-unfold' : 'menu-fold'}
+                onClick={this.toggleMenuCollapse}
+              /> */}
+              <h3>Automated Virtual Assessment</h3>
             </Header>
             <Content>
               <Route path="/studies" component={StudySection}/>
@@ -80,7 +109,8 @@ class AppContainer extends React.Component<{}, {}> {
 const STYLE = {
   HEADER: {
     background: '#fff',
-    padding: 0,
+    paddingLeft: '30px',
+    paddingTop: '25px',
     boxShadow: '0 1px 4px rgba(0,21,41,0.08)',
     zIndex: 10,
   }

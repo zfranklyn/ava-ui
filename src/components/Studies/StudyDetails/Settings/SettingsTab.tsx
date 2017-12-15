@@ -5,7 +5,12 @@ import {
   Tag,
   Icon,
   Divider,
+  Row,
+  Col,
 } from 'antd';
+import {
+  Redirect,
+} from 'react-router-dom';
 const TextArea = Input.TextArea;
 const InputGroup = Input.Group;
 
@@ -25,6 +30,7 @@ export interface ISettingsTabState {
   value: string;
   modified: boolean;
   uploading: boolean;
+  redirect: boolean;
 }
 
 class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> {
@@ -39,6 +45,7 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
       value: '',
       modified: false,
       uploading: false,
+      redirect: false,
     };
   }
 
@@ -144,6 +151,15 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
     });
   }
 
+  private deleteThisStudy = () => {
+    axios.delete(`http://localhost:8080/study/${this.props.studyId}`)
+    .then(() => {
+      this.setState({
+        redirect: true,
+      });
+    });
+  }
+
   public render() {
     let Tags = null;
 
@@ -153,6 +169,11 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
 
     return (
     <div>
+      {
+        (this.state.redirect) ? 
+        <Redirect to="/studies" /> :
+        null
+      }
       <form onSubmit={this.handleSubmitForm}>
         <label>
           Study Title
@@ -206,14 +227,27 @@ class SettingsTab extends React.Component<ISettingsTabProps, ISettingsTabState> 
 
         <Divider/>
 
-        <Button
-          disabled={!this.state.modified}
-          htmlType="submit"
-          loading={this.state.uploading}
-          type="primary"
-        >
-          Save Changes
-        </Button>
+        <Row>
+          <Col span={12}>
+          <Button
+            disabled={!this.state.modified}
+            htmlType="submit"
+            loading={this.state.uploading}
+            type="primary"
+          >
+            Save Changes
+          </Button>
+          </Col>
+          <Col span={12} style={{textAlign: 'right'}}>
+            <Button
+              type="danger"
+              onClick={this.deleteThisStudy}
+            >
+              Delete Study
+            </Button> 
+          </Col>
+        </Row>
+
       </form>
     </div>
     );
