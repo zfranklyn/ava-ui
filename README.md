@@ -6,7 +6,7 @@ In order to run AVA, you must run both `ava-ui` and `ava-api` concurrently. To r
 1. Clone the repository: `git clone https://github.com/zfranklyn/ava-ui.git`
 2. `cd` into the root directory `/ava-ui`
 3. Run `yarn` to install relevant packages
-4. Run `yarn start`. Server will be listening on `localhost:8080`
+4. Run `yarn start`. UI Development server will be listening on `localhost:3000` — navigate there on your browser.
 
 ### Why this project matters
 Since the creation of the email by Ray Tomlinson in 1972, email has become an indispensable medium of communication: it made mass communication simple, cheap, and scalable. With convenience, however, came overuse and desensitization: as early as 2001, researchers have observed a significant decreasing trend in email survey response rates (Sheehan, 2001). In a systematic review of survey factors affecting web survey responses, Fan and Yan (2010) attribute low survey response rates to the following key factors:
