@@ -51,9 +51,7 @@ AVA provides a user interface for Researchers to add participants, create studie
 ![Step 5](./step5.png)
 
 6. Participants can be added in the participants tab in a similar fashion:
-<div style="max-width:200px">
-![Step 6](./step6.png)
-</div>
+<img src="step6.png" style="max-width: 200px;" />
 
 7. Execute tasks, receive messages: when the scheduled time arrives, participants receive the scheduled messages. The scheduling mechanism and tools used to send emails/SMS will be further discussed in later sections.
 ![Step 7](./step7.png)
