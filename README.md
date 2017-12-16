@@ -2,7 +2,11 @@
 Data collection in psychological research suffers from a critical problem of low response rates. Surveys are typically sent en masse via email or hardcopy, and their accompanying reminders fail to distinguish between participants who have completed the survey and those who have not. Automated Virtual Assessment (AVA) is a web-based research suite that allows researchers to enroll participants and send scheduled messages (via both email and SMS) to these participants. This system attempts to increase response rates in two ways: first, it allows participants to receive survey links and accompanying reminders via SMS - a medium less cluttered than email inboxes; second, the system allows researchers to send personalized reminders (based on whether a participant as completed a survey) without compromising user identity, thus providing a secure channel to prompt users.
 
 ### How to run this project
-
+In order to run AVA, you must run both `ava-ui` and `ava-api` concurrently. To run `ava-ui`, do the following:
+1. Clone the repository: `git clone https://github.com/zfranklyn/ava-ui.git`
+2. `cd` into the root directory `/ava-ui`
+3. Run `yarn` to install relevant packages
+4. Run `yarn start`. Server will be listening on `localhost:8080`
 
 ### Why this project matters
 Since the creation of the email by Ray Tomlinson in 1972, email has become an indispensable medium of communication: it made mass communication simple, cheap, and scalable. With convenience, however, came overuse and desensitization: as early as 2001, researchers have observed a significant decreasing trend in email survey response rates (Sheehan, 2001). In a systematic review of survey factors affecting web survey responses, Fan and Yan (2010) attribute low survey response rates to the following key factors:
