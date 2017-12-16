@@ -37,32 +37,32 @@ AVA provides a user interface for Researchers to add participants, create studie
 
 1. Researcher creates study, providing information and metadata about the study. Metadata are key-value pairs that are stored with a survey; this metadata can be interpolated into messages to participants.
 <br />
-<img align="center" src="step1.png" width="500"/>
+<img align="center" src="./readme_files/step1.png" width="500"/>
 
 2. Upon creation of the study, researchers are able to browse the study details and create new tasks:
 <br/>
-<img align="center" src="step2.png" />
+<img align="center" src="./readme_files/step2.png" />
 
 3. The task modal allows researchers to specify the delivery medium, schedule, and reminders associated with a task. 
 
 <br/>
-<img align="center" src="step3.png" width="500"/>
+<img align="center" src="./readme_files/step3.png" width="500"/>
 
 4. Once a task is created, it can be viewed (and interacted with) from the general tasks tab in a table format. Both reminders and surveys are types of tasks; the table renders reminders are children of their associated tasks, visually representing a model consistent with the association between surveys and their reminders:
 
-![Step 4](./step4.png)
+![Step 4](./readme_files/step4.png)
 
 5. Recent tasks and average response rates can be viewed in the overview tab, which lists tasks between the following times: -24 hours ≤ now ≤ + 7 days. 
 
-![Step 5](./step5.png)
+![Step 5](./readme_files/step5.png)
 
 6. Participants can be added in the participants tab in a similar fashion:
 
-<img src="step6.png" width="500"/>
+<img src="./readme_files/step6.png" width="500"/>
 
 7. Execute tasks, receive messages: when the scheduled time arrives, participants receive the scheduled messages. The scheduling mechanism and tools used to send emails/SMS will be further discussed in later sections.
 
-![Step 7](./step7.png)
+![Step 7](./readme_files/step7.png)
 
 
 ### Implementation
