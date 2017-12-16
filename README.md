@@ -36,16 +36,17 @@ The Yale Center for Emotional Intelligence is conducting a pilot study to evalua
 AVA provides a user interface for Researchers to add participants, create studies, and add scheduled tasks to studies. This process is illustrated in the following screen shots:
 
 1. Researcher creates study, providing information and metadata about the study. Metadata are key-value pairs that are stored with a survey; this metadata can be interpolated into messages to participants.
-
-![Step 1](./step1.png)
+<br />
+<img align="center" src="step1.png" width="500"/>
 
 2. Upon creation of the study, researchers are able to browse the study details and create new tasks:
-
-![Step 2](./step2.png)
+<br/>
+<img align="center" src="step2.png" />
 
 3. The task modal allows researchers to specify the delivery medium, schedule, and reminders associated with a task. 
 
-![Step 3](./step3.png)
+<br/>
+<img align="center" src="step3.png" width="500"/>
 
 4. Once a task is created, it can be viewed (and interacted with) from the general tasks tab in a table format. Both reminders and surveys are types of tasks; the table renders reminders are children of their associated tasks, visually representing a model consistent with the association between surveys and their reminders:
 
